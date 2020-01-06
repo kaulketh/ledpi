@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Controlling a RasperryPi with your Browser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../static/script.js"></script>
+    <link rel="stylesheet" href="../static/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:600|Teko:500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700" rel="stylesheet">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark d-flex justify-content-between">
+          <div class="p-2"><a class="navbar-brand" href="mailto:kaulketh@gmail.com">&copy; Kauli1220 </a></div>
+        <div class="p-2"><h2 id="message"></h2></div>
+        <div class="p-2"><span id="subtitle">Controlling a RasperryPi with your Browser</span></div>
+    </nav>
+    <div class="container">
+             <div class="row">
+                <div class="col">
+                    <button class="btn btn-block btn-dark" id="btnToggle1" type="button" onclick="ajaxRequest('/clock')">Off 1</button>
+                    <div class="row"></div>
+                    <button class="btn btn-block btn-dark" id="btnToggle3" type="button" onclick="ajaxRequest('/animate')">Off 3</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-block btn-dark" id="btnToggle2" type="button" onclick="ajaxRequest('/advent')">Off 2</button>
+                    <div class="row"></div>
+                    <button class="btn btn-block btn-dark" id="btnToggle4" type="button" onclick="ajaxRequest('/russianxmas')">Off 4</button>
+                </div>
+            </div>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-block btn-danger" id="turnOffBtn" type="button" onclick="ajaxRequest('/shutdown')">Shutdown</button>
+            </div>
+        </div>
+        <div class="row"></div>
+    </div>
+</body>
+
+</html>
