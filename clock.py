@@ -7,10 +7,10 @@ import time
 from neopixel import *
 
 # LED strip configuration:
-LED_COUNT = 24      # Number of LED pixels.
-LED_PIN = 18      # GPIO pin connected to the pixels (must support PWM!).
+LED_COUNT = 24  # Number of LED pixels.
+LED_PIN = 18  # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
-LED_DMA = 10       # DMA channel to use for generating signal (try 10)
+LED_DMA = 10  # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
 # True to invert the signal (when using NPN transistor level shift)
 LED_INVERT = False
@@ -32,6 +32,11 @@ strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, 
 # Initialize the library (must be called once before other functions).
 strip.begin()
 
+global active
+
+def __get_active():
+    global active
+    return active
 
 
 def color_wipe(strip, color, wait_ms=50):
@@ -39,23 +44,36 @@ def color_wipe(strip, color, wait_ms=50):
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
         strip.show()
-        time.sleep(wait_ms/1000.0)
+        time.sleep(wait_ms / 1000.0)
 
 
-def clear_clock():
+def clear_clock(stop):
+    global active
+    active = not stop
+    print('clock active was set to ' + str(active))
     color_wipe(strip, Color(0, 0, 0), 10)
 
 
+
 def run_clock():
+    global active
+    active = True
     # Create NeoPixel object with appropriate configuration.
-    #strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
+    # strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
     # Initialize the library (must be called once before other functions).
-    #strip.begin()
+    # strip.begin()
 
     for i in range(0, strip.numPixels(), 1):
         strip.setPixelColor(i, Color(0, 0, 0))
 
-#    while True:
+    while active:
+        global active
+        active = __get_active()
+        print('clock should run = ' + str(active))
+        if not active:
+            clear_clock(True)
+            break
+
         # noinspection PyBroadException
         try:
             now = datetime.datetime.now()
@@ -63,7 +81,7 @@ def run_clock():
             minute = (int(int(now.minute) / 5 % 12 * 2)) + 1
             second = int(int(now.second) / 2.5)
 
-            # Low light during 19-8 o'clock
+            # Low light during given period
             if 8 < int(now.hour) < 18:
                 strip.setBrightness(200)
             else:
@@ -94,8 +112,8 @@ def run_clock():
                     strip.setPixelColorRGB(i, 0, 0, 0)
 
             strip.show()
+            # print("Clock " + str(now.hour) + ":" + str(now.minute) + ":" + str(now.second))
             time.sleep(0.1)
-            print("Clock "+str(now.hour)+":"+str(now.minute)+":"+str(now.second))
 
         except KeyboardInterrupt:
             print()
@@ -108,5 +126,4 @@ def run_clock():
 
 
 if __name__ == '__main__':
-    pass
-
+    run_clock()

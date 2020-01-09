@@ -5,30 +5,41 @@
 will be containing the functions to control lights
 """
 
-import time
-import datetime
-import math
-
 from clock import run_clock, clear_clock
 
 
+def stop_threads(threads):
+    for thread in threads:
+        thread.pause()
+        if not thread.stopped() and thread.isAlive():
+            # log.debug('stopping ' + thread.getName())
+            thread.stop()
+    # clock.clear(led_strip.strip)
+    return
+
+
+def xmas():
+    print('xmas')
+    #return
+
 
 def animate():
-    print('animation called')
+    print('animation')
     return
 
 
 def clock():
-    print('clock() called')
+    print('clock')
     run_clock()
+    return
 
 
 def advent():
-    print('advent called')
+    print('advent')
     return
 
 
 def all_off():
-    print('OFF called')
-    clear_clock()
+    print('all off')
+    clear_clock(True)
     return

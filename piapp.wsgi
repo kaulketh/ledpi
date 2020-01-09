@@ -5,6 +5,6 @@
 #       exec(file_.read(), dict(__file__=activate_this))
 
 import sys
-sys.path.insert(0, '/home/pi/piapp')
+sys.path.insert(0, '/home/pi/led')
 
 from piapp import app as application

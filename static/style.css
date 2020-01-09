@@ -8,8 +8,8 @@ body {
     padding: 3.5em 2.5em;
     font-size: 2.7em;
 */
-    padding: 1.8em 0.7em;
-    font-size: 5rem;
+    padding: 0.9em 0.3em;
+    font-size: 2rem;
     font-family: 'Orbitron', sans-serif;
     /*font-family: 'Source Code Pro', sans-serif; */
     font-weight: bold;
@@ -26,17 +26,17 @@ body {
 }
 */
 .row {
-    padding-top: 25px;
+    padding-top: 18px;
 }
 
 #subtitle {
-    color: #fff;
-    font-size: 1em;
+    color: rgb(255, 255, 255);
+    font-size: 1.5em;
 }
 
 #message {
     vertical-align: middle;
-    color: #f9a825;
+    color: rgb(249, 168, 37);
     font-size: 2.0em;
     font-weight: bold;
 }
@@ -47,5 +47,5 @@ body {
 }
 
 #btnToggle {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }

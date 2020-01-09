@@ -7,6 +7,7 @@ class RaspberryThread(threading.Thread):
         self.state = threading.Condition()
         self.function = function
         super(RaspberryThread, self).__init__()
+        self._stop = threading.Event()
 
     def start(self):
         super(RaspberryThread, self).start()
@@ -29,3 +30,10 @@ class RaspberryThread(threading.Thread):
     def pause(self):
         with self.state:
             self.paused = True
+
+    def stop(self):
+        #log.debug('{0} stopped'.format(self.name))
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.isSet()
