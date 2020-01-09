@@ -79,7 +79,7 @@ def shutdown():
     # stop_threads(threads)
     return "all threads paused"
 
-
+# FIXME: error if restart app before any threads were ran
 @app.route("/restart")
 def restart():
     try:
