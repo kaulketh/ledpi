@@ -10,24 +10,13 @@ from multiprocessing import Process, Queue
 from flask import Flask, render_template
 
 import clock
-from functions import animate, all_off, advent, xmas, stop_threads
+from functions import animate, all_off, advent, xmas
 from raspi import RaspberryThread
 
 some_threads = None
 some_queue = None
 
 app = Flask(__name__)
-
-
-# # CORS(app)
-# @app.after_request
-# def after_request(response):
-#     print('after_request called')
-#     response.headers.add('Access-Control-Allow-Origin', '*')
-#     response.headers.add('Access-Control-Allow-Headers',
-#                          'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers')
-#     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-#     return response
 
 
 @app.route("/")
@@ -149,10 +138,3 @@ if __name__ == '__main__':
     process.terminate()  # terminate flaskapp and then restart the app on subprocess
     args = [sys.executable] + [sys.argv[0]]
     subprocess.call(args)
-
-    # Run server
-    # app.run(
-    #     debug=True,
-    #     host='0.0.0.0',
-    #     port=5000,
-    #     threaded=True)
