@@ -5,32 +5,33 @@
 will be containing the functions to control lights
 """
 
+import logger
 from clock import run_clock, clear_clock
 
-
+log = logger.get_logger("Functions")
 
 def func_xmas():
-    print('xmas')
+    log.info('xmas')
     return
 
 
 def func_animate():
-    print('animation')
+    log.info('animation')
     return
 
 
 def func_clock():
-    print('clock')
+    log.info('clock')
     # run_clock()
     return
 
 
 def func_advent():
-    print('advent')
+    log.info('advent')
     return
 
 
 def func_all_off():
-    print('all off')
+    log.info('all off')
     # clear_clock(True)
     return

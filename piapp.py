@@ -5,12 +5,11 @@ import subprocess
 import sys
 import time
 from multiprocessing import Process, Queue
-
 from flask import Flask, render_template
-
-
 from functions import func_animate, func_all_off, func_advent, func_xmas, func_clock
+import logger
 
+log = logger.get_logger("PiApp")
 some_queue = None
 animation_proc = None
 clock_proc = None
@@ -23,11 +22,13 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
+    log.info("browse ui.html")
     return render_template("ui.html")
 
 
 @app.route("/control")
 def service():
+    log.info("browse control.html")
     return render_template("control.html")
 
 
@@ -36,8 +37,8 @@ def animation_view():
     _processes_stop_all()
     global animation_proc
     animation_proc = __process_start(func_animate())
-    msg = "animation process  called"
-    print(msg)
+    msg = "animation process called"
+    log.info(msg)
     return msg
 
 
@@ -46,8 +47,8 @@ def advent_view():
     _processes_stop_all()
     global advent_proc
     advent_proc = __process_start(func_advent())
-    msg = "advent calendar process  called"
-    print(msg)
+    msg = "advent calendar process called"
+    log.info(msg)
     return msg
 
 
@@ -56,8 +57,8 @@ def clock_view():
     _processes_stop_all()
     global clock_proc
     clock_proc = __process_start(func_clock())
-    msg = "clock process  called"
-    print(msg)
+    msg = "clock process called"
+    log.info(msg)
     return msg
 
 
@@ -67,7 +68,7 @@ def xmas_view():
     global xmas_proc
     xmas_proc = __process_start(func_xmas())
     msg = "xmas process called"
-    print(msg)
+    log.info(msg)
     return msg
 
 
@@ -76,7 +77,7 @@ def shutdown():
     func_all_off()
     _processes_stop_all()
     msg = "all paused"
-    print(msg)
+    log.info(msg)
     return msg
 
 
@@ -85,18 +86,18 @@ def shutdown():
 def restart():
     try:
         some_queue.put("something")
-        print "Restarted successfully"
+        log.info("Restarted successfully")
         return "Flask restart"
     except Exception:
-        print "Failed in restart"
+        log.error("Failed in restart")
         return "Restart failed"
 
 
 @app.route("/reboot", methods=["GET"])
 def reboot():
+    msg = "device reboot"
+    log.info(msg)
     os.system('sudo reboot')
-    msg = "device rebooted"
-    print(msg)
     return msg
 
 
@@ -106,12 +107,12 @@ def __process_start(target):
         global running_processes
         proc = Process(target=target)
         proc.start()
-        print(proc.name + ' started')
+        log.debug(proc.name + ' started')
         running_processes.append(proc)
-        print(proc.name + ' appended to list')
+        log.debug(proc.name + ' appended to list')
         return proc
     except Exception:
-        print("Failed to start process.")
+        log.error("Failed to start process.")
 
 
 def __process_stop(process_to_stop):
@@ -122,9 +123,9 @@ def __process_stop(process_to_stop):
     """
     global running_processes
     running_processes.remove(process_to_stop)
-    print process_to_stop.name + ' removed from list'
+    log.debug(process_to_stop.name + ' removed from list')
     process_to_stop.terminate()
-    print process_to_stop.name + ' terminated'
+    log.debug(process_to_stop.name + ' terminated')
     return process_to_stop
 
 
@@ -134,7 +135,7 @@ def _processes_stop_all():
         for p in running_processes:
             __process_stop(p)
     else:
-        print('nothing to kill ;-)')
+        log.debug('nothing to kill ;-)')
     return
 
 
@@ -147,13 +148,15 @@ def _start_flask_app(any_queue):
         host='0.0.0.0',
         port=5000,
         threaded=True)
+    log.info("FLASK app started")
 
 
 if __name__ == '__main__':
 
     queue = Queue()
-    flask_proc = Process(target=_start_flask_app, args=(queue,))
+    flask_proc = Process(target=_start_flask_app, args=(queue, ))
     flask_proc.start()
+    log.debug("FLASK process started")
     while True:  # waiting queue, if there is no call than sleep, otherwise break
         if queue.empty():
             time.sleep(0.5)
@@ -162,5 +165,6 @@ if __name__ == '__main__':
 
     _processes_stop_all()
     flask_proc.terminate()  # terminate flask app and then restart the app on subprocess
+    log.debug("FLASK process terminated")
     args = [sys.executable] + [sys.argv[0]]
     subprocess.call(args)
