@@ -8,7 +8,7 @@ function ajaxRequest(url) {
             console.log('Request failed.  Returned status of: ' + xhr.status);
         } else {
             console.log('Response Text: ' + xhr.responseText);
-            document.getElementById("message").innerHTML = url.slice(1).toUpperCase();
+            // document.getElementById("message").innerHTML = url.slice(1).toUpperCase();
         }
     };
     xhr.send();

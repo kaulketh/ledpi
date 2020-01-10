@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 import os
 import subprocess
 import sys
@@ -9,12 +8,15 @@ from multiprocessing import Process, Queue
 
 from flask import Flask, render_template
 
-import clock
-from functions import animate, all_off, advent, xmas
-from raspi import RaspberryThread
 
-some_threads = None
+from functions import func_animate, func_all_off, func_advent, func_xmas, func_clock
+
 some_queue = None
+animation_proc = None
+clock_proc = None
+xmas_proc = None
+advent_proc = None
+running_processes = []
 
 app = Flask(__name__)
 
@@ -24,99 +26,121 @@ def index():
     return render_template("ui.html")
 
 
-@app.route("/control", strict_slashes=False)
+@app.route("/control")
 def service():
     return render_template("control.html")
 
 
 @app.route("/animate", methods=["GET"])
 def animation_view():
-    # stop_threads(threads)
-    # Pause any running threads
-    any(thread.pause() for thread in threads)
-    # Start the target thread if it is not running
-    if not animate_thread.isAlive():
-        animate_thread.start()
-    # Unpause the thread and thus execute its function
-    animate_thread.resume()
-    return "animation started"
+    _processes_stop_all()
+    global animation_proc
+    animation_proc = __process_start(func_animate())
+    msg = "animation process  called"
+    print(msg)
+    return msg
 
 
 @app.route("/advent", methods=["GET"])
 def advent_view():
-    # stop_threads(threads)
-    any(thread.pause() for thread in threads)
-    if not advent_thread.isAlive():
-        advent_thread.start()
-    advent_thread.resume()
-    return "advent calendar started"
+    _processes_stop_all()
+    global advent_proc
+    advent_proc = __process_start(func_advent())
+    msg = "advent calendar process  called"
+    print(msg)
+    return msg
 
 
 @app.route("/clock", methods=["GET"])
 def clock_view():
-    # stop_threads(threads)
-    any(thread.pause() for thread in threads)
-    if not clock_thread.isAlive():
-        clock_thread.start()
-    clock_thread.resume()
-    return "clock started"
+    _processes_stop_all()
+    global clock_proc
+    clock_proc = __process_start(func_clock())
+    msg = "clock process  called"
+    print(msg)
+    return msg
 
 
 @app.route("/xmas", methods=["GET"])
 def xmas_view():
-    # stop_threads(threads)
-    any(thread.pause() for thread in threads)
-    if not xmas_thread.isAlive():
-        xmas_thread.start()
-    xmas_thread.resume()
-    return "russian xmas started"
+    _processes_stop_all()
+    global xmas_proc
+    xmas_proc = __process_start(func_xmas())
+    msg = "xmas process called"
+    print(msg)
+    return msg
 
 
 @app.route("/stop", methods=["GET"])
 def shutdown():
-    all_off()
-    any(thread.pause() for thread in threads)
-    # stop_threads(threads)
-    return "all threads paused"
+    func_all_off()
+    _processes_stop_all()
+    msg = "all paused"
+    print(msg)
+    return msg
 
-# FIXME: error if restart app before any threads were ran
-@app.route("/restart")
+
+# noinspection PyBroadException
+@app.route("/restart", methods=["GET"])
 def restart():
     try:
-        any(thread.pause() for thread in threads)
         some_queue.put("something")
         print "Restarted successfully"
-        return "Quit"
-    except:
+        return "Flask restart"
+    except Exception:
         print "Failed in restart"
-        return "Failed"
+        return "Restart failed"
 
 
 @app.route("/reboot", methods=["GET"])
 def reboot():
     os.system('sudo reboot')
-    return "device rebooted"
+    msg = "device rebooted"
+    print(msg)
+    return msg
 
 
-# Create threads
-threads = []
-animate_thread = RaspberryThread(function=animate)
-clock_thread = RaspberryThread(function=clock)
-xmas_thread = RaspberryThread(function=xmas)
-advent_thread = RaspberryThread(function=advent)
-# collect threads
-threads.append(animate_thread)
-threads.append(clock_thread)
-threads.append(xmas_thread)
-threads.append(advent_thread)
+def __process_start(target):
+    # noinspection PyBroadException
+    try:
+        global running_processes
+        proc = Process(target=target)
+        proc.start()
+        print(proc.name + ' started')
+        running_processes.append(proc)
+        print(proc.name + ' appended to list')
+        return proc
+    except Exception:
+        print("Failed to start process.")
 
 
-def _start_flaskapp(any_queue, any_threads):
+def __process_stop(process_to_stop):
+    """
+
+    :return:
+    :type process_to_stop: Process
+    """
+    global running_processes
+    running_processes.remove(process_to_stop)
+    print process_to_stop.name + ' removed from list'
+    process_to_stop.terminate()
+    print process_to_stop.name + ' terminated'
+    return process_to_stop
+
+
+def _processes_stop_all():
+    global running_processes
+    if running_processes.__len__() > 0:
+        for p in running_processes:
+            __process_stop(p)
+    else:
+        print('nothing to kill ;-)')
+    return
+
+
+def _start_flask_app(any_queue):
     global some_queue
     some_queue = any_queue
-
-    global some_threads
-    some_threads = any_threads
 
     app.run(
         debug=True,
@@ -128,13 +152,15 @@ def _start_flaskapp(any_queue, any_threads):
 if __name__ == '__main__':
 
     queue = Queue()
-    process = Process(target=_start_flaskapp, args=(queue, threads,))
-    process.start()
-    while True:  # wathing queue, if there is no call than sleep, otherwise break
+    flask_proc = Process(target=_start_flask_app, args=(queue,))
+    flask_proc.start()
+    while True:  # waiting queue, if there is no call than sleep, otherwise break
         if queue.empty():
-            time.sleep(1)
+            time.sleep(0.5)
         else:
             break
-    process.terminate()  # terminate flaskapp and then restart the app on subprocess
+
+    _processes_stop_all()
+    flask_proc.terminate()  # terminate flask app and then restart the app on subprocess
     args = [sys.executable] + [sys.argv[0]]
     subprocess.call(args)

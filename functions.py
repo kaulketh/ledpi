@@ -8,38 +8,29 @@ will be containing the functions to control lights
 from clock import run_clock, clear_clock
 
 
-def stop_threads(threads):
-    for thread in threads:
-        thread.pause()
-        if not thread.stopped() and thread.isAlive():
-            # log.debug('stopping ' + thread.getName())
-            thread.stop()
-    # clock.clear(led_strip.strip)
+
+def func_xmas():
+    print('xmas')
     return
 
 
-def xmas():
-    print('xmas')
-    #return
-
-
-def animate():
+def func_animate():
     print('animation')
     return
 
 
-def clock():
+def func_clock():
     print('clock')
-    run_clock()
+    # run_clock()
     return
 
 
-def advent():
+def func_advent():
     print('advent')
     return
 
 
-def all_off():
+def func_all_off():
     print('all off')
-    clear_clock(True)
+    # clear_clock(True)
     return
