@@ -3,7 +3,7 @@
 
 import datetime
 import time
-
+import logger
 from neopixel import *
 
 # LED strip configuration:
@@ -27,53 +27,42 @@ sR = 184
 sG = 134
 sB = 11
 
+log = logger.get_logger("Clock")
+stop_flag = None
+
 # Create NeoPixel object with appropriate configuration.
 strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
 # Initialize the library (must be called once before other functions).
 strip.begin()
 
-global active
 
-def __get_active():
-    global active
-    return active
-
-
+# noinspection PyShadowingNames
 def color_wipe(strip, color, wait_ms=50):
     """Wipe color across display a pixel at a time."""
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
         strip.show()
         time.sleep(wait_ms / 1000.0)
+    return
 
 
-def clear_clock(stop):
-    global active
-    active = not stop
-    print('clock active was set to ' + str(active))
-    color_wipe(strip, Color(0, 0, 0), 10)
-
+def stop_clock():
+    global stop_flag
+    stop_flag = True
+    log.debug('clock stop_flag was set to ' + str(stop_flag))
+    # color_wipe(strip, Color(0, 0, 0), 10)
+    return
 
 
 def run_clock():
-    global active
-    active = True
-    # Create NeoPixel object with appropriate configuration.
-    # strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
-    # Initialize the library (must be called once before other functions).
-    # strip.begin()
+    global stop_flag
+    stop_flag = False
+    log.debug('clock started, stop_flag = ' + str(stop_flag))
 
     for i in range(0, strip.numPixels(), 1):
         strip.setPixelColor(i, Color(0, 0, 0))
 
-    while active:
-        global active
-        active = __get_active()
-        print('clock should run = ' + str(active))
-        if not active:
-            clear_clock(True)
-            break
-
+    while True:
         # noinspection PyBroadException
         try:
             now = datetime.datetime.now()
@@ -112,18 +101,25 @@ def run_clock():
                     strip.setPixelColorRGB(i, 0, 0, 0)
 
             strip.show()
-            # print("Clock " + str(now.hour) + ":" + str(now.minute) + ":" + str(now.second))
             time.sleep(0.1)
+            global stop_flag
+            if stop_flag:
+                break
 
         except KeyboardInterrupt:
             print()
-            print("Program interrupted")
+            log.warn("KeyboardInterrupt: {0}", exec_info=1)
             color_wipe(strip, Color(0, 0, 0), 10)
             exit()
 
         except Exception:
-            print("Any error occurs")
+            log.error("Any error occurs: {0}", exec_info=1)
+
+    log.debug('clock run stopped')
+    color_wipe(strip, Color(0, 0, 0), 10)
+    log.debug('LED stripe cleared')
+    return
 
 
 if __name__ == '__main__':
-    run_clock()
+    pass
