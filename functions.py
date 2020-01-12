@@ -2,14 +2,23 @@
 # -*- coding: utf-8 -*-
 
 """
-conains function calls to control lights
+contains methods to call light effect functions
 """
+
 import time
+
 import logger
+from light_effects.advent import run_advent, stop_advent
+from light_effects.animation import run_animation, stop_animation
 from light_effects.clock import run_clock, stop_clock
 
+__author___ = "Thomas Kaulke"
+__email__ = "kaulketh@gmail.com"
 
-# TODO: Simplify functions and summarize / refactor
+__maintainer___ = "Thomas Kaulke"
+__status__ = "Development"
+
+from light_effects.xmas import run_xmas, stop_xmas
 
 animation = "animation"
 advent = "advent"
@@ -20,83 +29,57 @@ xmas = "xmas"
 log = logger.get_logger("Functions")
 stop_flag = None
 running_function = None
-check_time = 2
+
+
+def observe(function):
+    global running_function, stop_flag
+    running_function = function
+    stop_flag = False
+    while True:
+        if (not stop_flag) and (running_function == function):
+            log.debug(function + " is running")
+            time.sleep(0.5)
+        else:
+            log.debug(function + " stopped")
+            break
 
 
 def func_xmas():
-    global running_function
-    running_function = xmas
-    global stop_flag
-    stop_flag = False
-    # TODO: insert 'Xmas' call here
-    while True:
-        if (not stop_flag) and (running_function == xmas):
-            log.info(xmas + " is running")
-            time.sleep(check_time)
-        else:
-            log.info(xmas + " stopped")
-            break
+    run_xmas()
+    observe(xmas)
     return
 
 
 def func_animate():
-    global running_function
-    running_function = animation
-    global stop_flag
-    stop_flag = False
-    # TODO: insert 'animation' call here
-    while True:
-        if (not stop_flag) and (running_function == animation):
-            log.info(animation + " is running")
-            time.sleep(check_time)
-        else:
-            log.info(animation + " stopped")
-            break
+    run_animation()
+    observe(animation)
     return
 
 
 def func_clock():
-    global running_function
-    running_function = clock
-    global stop_flag
-    stop_flag = False
     run_clock()
-    while True:
-        if (not stop_flag) and (running_function == clock):
-            log.info(clock + " is running")
-            time.sleep(check_time)
-        else:
-            log.info(clock + " stopped")
-            break
+    observe(clock)
     return
 
 
 def func_advent():
-    global running_function
-    running_function = advent
-    global stop_flag
-    stop_flag = False
-    # TODO: insert 'advent' call here
-    while True:
-        if (not stop_flag) and (running_function == advent):
-            log.info(advent + "is running")
-            time.sleep(check_time)
-        else:
-            log.info(advent  + " stopped")
-            break
+    run_advent()
+    observe(advent)
     return
 
 
 def functions_off():
-    log.info('called functions off')
-    global running_function
+    log.info("functions off")
+    global running_function, stop_flag
     running_function = None
-    global stop_flag
     stop_flag = True
     log.debug('stop_flag: = ' + str(stop_flag))
     stop_clock()
-    # TODO: insert stop calls of every functions here
-    # .
-    # .
-    # .
+    stop_animation()
+    stop_advent()
+    stop_xmas()
     return
+
+
+if __name__ == '__main__':
+    pass

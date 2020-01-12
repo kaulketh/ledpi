@@ -1,14 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# logger.py
 """
+logger.py
 logging tool
-author: Thomas Kaulke, kaulketh@gmail.com
 """
+import os
 
 import logging
-import os
+
 from logging.config import fileConfig
+
+__author___ = "Thomas Kaulke"
+__email__ = "kaulketh@gmail.com"
+
+__maintainer___ = "Thomas Kaulke"
+__status__ = "Development"
 
 this_folder = os.path.dirname(os.path.abspath(__file__))
 config_file = os.path.join(this_folder, 'logger.ini')

@@ -1,14 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# logger/__init__py
 """
-author: Thomas Kaulke, kaulketh@gmail.com
+logger/__init__py
 """
+import os
+import errno
 
 from .logger import get_logger
 from .logger import logging
 
-import os, errno
+__author___ = "Thomas Kaulke"
+__email__ = "kaulketh@gmail.com"
+
+__maintainer___ = "Thomas Kaulke"
+__status__ = "Development"
+
 
 try:
     os.makedirs('log')

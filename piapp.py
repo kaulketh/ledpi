@@ -1,13 +1,24 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+main script for app and flask
+"""
 import os
 import subprocess
 import sys
 import time
 from multiprocessing import Process, Queue
+
 from flask import Flask, render_template
-from functions import func_animate, functions_off, func_advent, func_xmas, func_clock
+
 import logger
+from functions import func_animate, functions_off, func_advent, func_xmas, func_clock
+
+__author___ = "Thomas Kaulke"
+__email__ = "kaulketh@gmail.com"
+
+__maintainer___ = "Thomas Kaulke"
+__status__ = "Development"
 
 app_name = "PiApp"
 log = logger.get_logger(app_name)
@@ -22,6 +33,7 @@ running_processes = []
 app = Flask(app_name)
 
 
+# region pages
 @app.route("/")
 def index():
     log.info("Browse UI")
@@ -32,8 +44,10 @@ def index():
 def service():
     log.info("Browse Service")
     return render_template("control.html")
+# endregion
 
 
+# region functions
 @app.route("/animate", methods=["GET"])
 def animation_view():
     msg = "animation process called"
@@ -103,8 +117,10 @@ def reboot():
     msg = "device reboot"
     log.info(msg)
     os.system('sudo reboot')
+# endregion
 
 
+# region methods
 def start_process(target):
     # noinspection PyBroadException
     try:
@@ -162,6 +178,7 @@ def start_flask_app(any_queue):
         log.error("Failed to start FLASK app: {0}", exec_info=1)
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt: {0}", exec_info=1)
+# endregion
 
 
 if __name__ == '__main__':

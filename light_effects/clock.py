@@ -1,19 +1,22 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+"""
+clock for 24-LEDs-strip
+"""
 import datetime
 import time
-import logger
+
 from neopixel import *
 
-# LED strip configuration:
-LED_COUNT = 24  # Number of LED pixels.
-LED_PIN = 18  # GPIO pin connected to the pixels (must support PWM!).
-LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
-LED_DMA = 10  # DMA channel to use for generating signal (try 10)
-LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
-# True to invert the signal (when using NPN transistor level shift)
-LED_INVERT = False
+import logger
+
+__author___ = "Thomas Kaulke"
+__email__ = "kaulketh@gmail.com"
+
+__maintainer___ = "Thomas Kaulke"
+__status__ = "Development"
+
+from light_effects.led_strip import get_strip
 
 hR = 200
 hG = 0
@@ -29,11 +32,7 @@ sB = 11
 
 log = logger.get_logger("Clock")
 stop_flag = None
-
-# Create NeoPixel object with appropriate configuration.
-strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
-# Initialize the library (must be called once before other functions).
-strip.begin()
+strip = get_strip()
 
 
 # noinspection PyShadowingNames
@@ -57,7 +56,7 @@ def stop_clock():
 def run_clock():
     global stop_flag
     stop_flag = False
-    log.debug('clock started, stop_flag = ' + str(stop_flag))
+    log.info('clock started, stop_flag = ' + str(stop_flag))
 
     for i in range(0, strip.numPixels(), 1):
         strip.setPixelColor(i, Color(0, 0, 0))
