@@ -16,6 +16,8 @@ from light_effects.led_strip import get_strip
 
 log = logger.get_logger("Xmas")
 stop_flag = None
+
+log.debug("Initialize LED strip.")
 strip = get_strip()
 
 

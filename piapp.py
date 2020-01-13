@@ -20,16 +20,16 @@ __email__ = "kaulketh@gmail.com"
 __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
 
-app_name = "PiApp"
-log = logger.get_logger(app_name)
-
 some_queue = None
+any_process = None
 animation_proc = None
 clock_proc = None
 xmas_proc = None
 advent_proc = None
 running_processes = []
 
+app_name = "PiApp"
+log = logger.get_logger(app_name)
 app = Flask(app_name)
 
 
@@ -40,19 +40,19 @@ def index():
     return render_template("ui.html")
 
 
-@app.route("/control")
+@app.route("/service")
 def service():
     log.info("Browse Service")
-    return render_template("control.html")
+    return render_template("service.html")
 # endregion
 
 
 # region functions
-@app.route("/animate", methods=["GET"])
+@app.route("/animation", methods=["GET"])
 def animation_view():
+    stop_everything()
     msg = "animation process called"
     log.info(msg)
-    stop_everything()
     global animation_proc
     animation_proc = start_process(func_animate())
     return msg
@@ -60,9 +60,9 @@ def animation_view():
 
 @app.route("/advent", methods=["GET"])
 def advent_view():
+    stop_everything()
     msg = "advent calendar process called"
     log.info(msg)
-    stop_everything()
     global advent_proc
     advent_proc = start_process(func_advent())
     return msg
@@ -70,9 +70,9 @@ def advent_view():
 
 @app.route("/clock", methods=["GET"])
 def clock_view():
+    stop_everything()
     msg = "clock process called"
     log.info(msg)
-    stop_everything()
     global clock_proc
     clock_proc = start_process(func_clock())
     return msg
@@ -80,9 +80,9 @@ def clock_view():
 
 @app.route("/xmas", methods=["GET"])
 def xmas_view():
+    stop_everything()
     msg = "xmas process called"
     log.info(msg)
-    stop_everything()
     global xmas_proc
     xmas_proc = start_process(func_xmas())
     return msg
@@ -90,9 +90,9 @@ def xmas_view():
 
 @app.route("/stop", methods=["GET"])
 def shutdown():
+    stop_everything()
     msg = "all should paused"
     log.info(msg)
-    stop_everything()
     return msg
 
 
@@ -137,11 +137,6 @@ def start_process(target):
 
 
 def stop_process(process_to_stop):
-    """
-
-    :return:
-    :type process_to_stop: Process
-    """
     global running_processes
     running_processes.remove(process_to_stop)
     log.debug(process_to_stop.name + ' removed from list')
@@ -152,7 +147,7 @@ def stop_process(process_to_stop):
 
 def stop_everything():
     functions_off()
-    time.sleep(1)
+    time.sleep(0.5)
     global running_processes
     if running_processes.__len__() > 0:
         for p in running_processes:

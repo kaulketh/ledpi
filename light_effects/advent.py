@@ -15,6 +15,8 @@ __status__ = "Development"
 
 log = logger.get_logger("Advent")
 stop_flag = None
+
+log.debug("Initialize LED strip.")
 strip = get_strip()
 
 

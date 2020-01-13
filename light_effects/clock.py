@@ -32,6 +32,8 @@ sB = 11
 
 log = logger.get_logger("Clock")
 stop_flag = None
+
+log.debug("Initialize LED strip.")
 strip = get_strip()
 
 
@@ -54,6 +56,14 @@ def stop_clock():
 
 
 def run_clock():
+    global stop_flag
+    stop_flag = False
+    log.info('clock started, stop_flag = ' + str(stop_flag))
+    return
+
+
+# disabled temporarily
+def run_clock_origin():
     global stop_flag
     stop_flag = False
     log.info('clock started, stop_flag = ' + str(stop_flag))

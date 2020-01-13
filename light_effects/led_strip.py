@@ -29,7 +29,9 @@ stop_flag = None
 
 def get_strip():
     # Create NeoPixel object with appropriate configuration.
+    log.debug("Create NeoPixel object with appropriate configuration.")
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
     # Initialize the library (must be called once before other functions).
+    log.debug("Initialize the library.")
     strip.begin()
     return strip

@@ -20,11 +20,6 @@ body {
     padding-top: 10px;
 }
 
-/*
-#turnOnBtn {
-    font-size: 3em;
-}
-*/
 .row {
     padding-top: 18px;
 }
@@ -34,9 +29,8 @@ body {
     font-size: 1.5em;
 }
 
-#message {
-    vertical-align: middle;
-    color: rgb(249, 168, 37);
+#status {
+    color: rgb(75, 17, 27);
     font-size: 2.0em;
     font-weight: bold;
 }
@@ -46,6 +40,4 @@ body {
     font-weight: bold;
 }
 
-#btnToggle {
-    margin-bottom: 20px;
-}
+
