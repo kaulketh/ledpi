@@ -110,7 +110,7 @@ def func_clock2():
         set_status(clock2)
         #observe(clock2)
         run_clock2()
-        return
+    return
 
 
 def func_advent():
@@ -120,7 +120,7 @@ def func_advent():
         set_status(advent)
         #observe(advent)
         run_advent()
-        return
+    return
 
 
 def functions_off():

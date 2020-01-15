@@ -9,7 +9,7 @@ import time
 from neopixel import *
 
 import logger
-from light_effects.effects import color_wipe
+from light_effects.effects import color_wipe_full
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
@@ -83,15 +83,15 @@ def run_clock2():
                 break
 
         except KeyboardInterrupt:
-            log.warn("KeyboardInterrupt: {0}", exec_info=1)
-            color_wipe(strip, Color(0, 0, 0), 10)
+            log.warn("KeyboardInterrupt")
+            color_wipe_full(strip, Color(0, 0, 0), 10)
             exit()
 
         except Exception:
-            log.error("Any error occurs: {0}", exec_info=1)
+            log.error("Any error occurs.")
 
     log.info('clock 2 run stopped')
-    color_wipe(strip, Color(0, 0, 0), 10)
+    color_wipe_full(strip, Color(0, 0, 0), 10)
     log.debug('LED stripe cleared')
     return
 

@@ -9,7 +9,7 @@ import sys
 import time
 from multiprocessing import Process, Queue
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 
 import logger
 from functions import func_theater, functions_off, func_advent, func_circus, func_clock1, func_clock2, func_candles, \
@@ -20,8 +20,6 @@ __email__ = "kaulketh@gmail.com"
 
 __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
-
-from light_effects.advent import run_advent
 
 some_queue = None
 candles_proc = None
@@ -44,7 +42,7 @@ def index():
     return render_template("index.html", status=get_status().upper())
 
 
-@app.route("/service", methods=['GET', 'POST'])
+@app.route("/service", methods=['GET'])
 def service():
     log.info("Browse Service")
     return render_template("service.html")
@@ -115,7 +113,7 @@ def off_view():
 
 
 # noinspection PyBroadException
-@app.route("/restart", methods=["GET", 'POST'])
+@app.route("/restart")
 def restart():
     stop_everything()
     try:
@@ -124,21 +122,19 @@ def restart():
         log.info(msg)
         return msg
     except Exception:
-        log.error("Failed in restart: {0}", exec_info=1)
+        log.error("Failed in restart")
         return "Restart failed"
     except KeyboardInterrupt:
-        log.warn("KeyboardInterrupt: {0}", exec_info=1)
-
-    return render_template("index.html", status="off".upper())
+        log.warn("KeyboardInterrupt")
 
 
+# TODO: implement hidden functions for service and maintenance
 @app.route("/reboot", methods=["GET"])
 def reboot():
+    stop_everything()
     msg = "device reboot"
     log.info(msg)
     os.system('sudo reboot')
-
-
 # endregion
 
 
@@ -153,9 +149,9 @@ def start_process(target):
         proc.start()
         return proc
     except Exception:
-        log.error("Failed to start process: {0}", exec_info=1)
+        log.error("Failed to start process.")
     except KeyboardInterrupt:
-        log.warn("KeyboardInterrupt: {0}", exec_info=1)
+        log.warn("KeyboardInterrupt")
 
 
 def stop_process(process_to_stop):
@@ -177,7 +173,6 @@ def stop_everything():
             stop_process(p)
     else:
         log.debug('nothing to kill ;-)')
-    return
 
 
 def start_flask_app(any_queue):
@@ -187,16 +182,14 @@ def start_flask_app(any_queue):
         some_queue = any_queue
         log.info("start FLASK app")
         app.run(
-            debug=True,
+            debug=False,
             host='0.0.0.0',
             port=5000,
             threaded=True)
     except Exception:
-        log.error("Failed to start FLASK app: {0}", exec_info=1)
+        log.error("Failed to start FLASK app.")
     except KeyboardInterrupt:
-        log.warn("KeyboardInterrupt: {0}", exec_info=1)
-
-
+        log.warn("KeyboardInterrupt")
 # endregion
 
 

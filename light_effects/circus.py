@@ -20,7 +20,7 @@ import _rpi_ws281x as ws
 
 import logger
 from light_effects import get_strip
-from light_effects.effects import color_wipe
+from light_effects.effects import color_wipe_full
 
 __author___ = "Tony DiCola, Jeremy Garff"
 __email__ = "tony@tonydicola.com,jer@jers.net"
@@ -103,7 +103,6 @@ def run_circus():
             for i in range(LED_COUNT):
                 # Pick a color based on LED position and an offset for animation.
                 color = DOT_COLORS[(i + offset) % len(DOT_COLORS)]
-                color = DOT_COLORS[(i + offset) % len(DOT_COLORS)]
                 # Set the LED color buffer value.
                 ws.ws2811_led_set(channel, i, color)
 
@@ -125,12 +124,12 @@ def run_circus():
 
     except KeyboardInterrupt:
         print()
-        log.warn("KeyboardInterrupt: {0}", exec_info=1)
-        color_wipe(get_strip(), Color(0, 0, 0), 10)
+        log.warn("KeyboardInterrupt")
+        color_wipe_full(get_strip(), Color(0, 0, 0), 10)
         exit()
 
     except Exception:
-        log.error("Any error occurs: {0}", exec_info=1)
+        log.error("Any error occurs.")
 
     finally:
         # Ensure ws2811_fini is called before the program quits.
@@ -140,7 +139,7 @@ def run_circus():
         ws.delete_ws2811_t(leds)
 
     log.info('circus run stopped')
-    color_wipe(get_strip(), Color(0, 0, 0), 10)
+    color_wipe_full(get_strip(), Color(0, 0, 0), 10)
     log.debug('LED stripe cleared')
     return
 

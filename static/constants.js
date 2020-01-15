@@ -25,21 +25,37 @@ const requestIndexFunctions = {
     'stopBtn': '/all off'
 };
 
+
 function setupIndexPage() {
-    for (const id in requestIndexFunctions) {
-        document.getElementById(id).setAttribute('onclick', "ajaxRequest(requestIndexFunctions[id], this)");
-    }
+    try {
+        for (const id in requestIndexFunctions) {
+            try {
+                document.getElementById(id).setAttribute('onclick', "ajaxRequest(requestIndexFunctions[id], this)");
+            } catch (e) {
+                // console.log(e)
+            }
+        }
+        try {
+            document.getElementById('serviceBtn').setAttribute('onclick', "goto('/service')");
+        } catch (e) {
+            // console.log(e)
+        }
 
-    document.getElementById('serviceBtn').setAttribute('onclick', "goto('/service')");
-
-    for (const id in indexLabels) {
-        document.getElementById(id).innerHTML = indexLabels[id].toUpperCase();
+        for (const id in indexLabels) {
+            try {
+                document.getElementById(id).innerHTML = indexLabels[id].toUpperCase();
+            } catch (e) {
+                // console.log(e)
+            }
+        }
+    } catch (e) {
+        // console.log(e)
     }
 }
 
 function setupServicePage() {
     document.getElementById('homeBtn').setAttribute('onclick', "goto('/')");
-    document.getElementById('restartBtn').setAttribute('onclick', "ajaxRequest('/restart')");
+    document.getElementById('restartBtn').setAttribute('onclick', "goto('/');ajaxRequest('/restart')");
     document.getElementById('rebootBtn').setAttribute('onclick', "ajaxRequest('/reboot')");
 
     for (const id in serviceLabels) {

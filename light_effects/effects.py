@@ -28,12 +28,22 @@ def clear(strip):
 
 # Define functions which animate LEDs in various ways.
 # noinspection PyShadowingNames
-def color_wipe(strip, color, wait_ms=50):
+def color_wipe_full(strip, color, wait_ms=50):
     """Wipe color across display a pixel at a time."""
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
         strip.show()
         time.sleep(wait_ms/1000.0)
+
+
+# noinspection PyShadowingNames
+def color_wipe(strip, color, r, wait_ms=50):
+    """Wipe color across display a pixel at a time."""
+    for i in range(r):  # strip.numPixels()):
+        strip.setPixelColor(i, color)
+        strip.show()
+        time.sleep(wait_ms / 1000.0)
+    return
 
 
 # noinspection PyShadowingNames
@@ -109,9 +119,9 @@ if __name__ == '__main__':
 
         while True:
             print('Color wipe animations.')
-            color_wipe(strip, Color(255, 0, 0))  # Green wipe
-            color_wipe(strip, Color(0, 255, 0))  # Red wipe
-            color_wipe(strip, Color(0, 0, 255))  # Blue wipe
+            color_wipe_full(strip, Color(255, 0, 0))  # Green wipe
+            color_wipe_full(strip, Color(0, 255, 0))  # Red wipe
+            color_wipe_full(strip, Color(0, 0, 255))  # Blue wipe
             print('Theater chase animations.')
             theater_chase(strip, Color(127, 127, 127))  # White theater chase
             theater_chase(strip, Color(127, 0, 0))  # Green theater chase
@@ -123,4 +133,4 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         if args.clear:
-            color_wipe(strip, Color(0, 0, 0), 10)
+            color_wipe_full(strip, Color(0, 0, 0), 10)
