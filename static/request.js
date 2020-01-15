@@ -1,8 +1,8 @@
 function ajaxRequest(url) {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', url);
 
-    xhr.onload = function() {
+    xhr.onload = function () {
 
         if (xhr.status !== 200) {
             console.log('Request failed.  Returned status of: ' + xhr.status);
@@ -10,8 +10,13 @@ function ajaxRequest(url) {
             console.log('Response Text: ' + xhr.responseText);
         }
     };
-    document.getElementById("status").innerHTML = url.slice(1).toUpperCase();
-    xhr.send();
+    try {
+        xhr.send();
+        console.log('function status: ' + url.slice(1).toUpperCase());
+        document.getElementById("status").innerHTML = url.slice(1).toUpperCase();
+    } catch (e) {
+        //console.log(e)
+    }
 }
 
 function goto(url) {

@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <title>LED Control - Raspberry Pi</title>
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="../static/script.js"></script>
-    <script src="../static/label.js"></script>
+    <script src="../static/request.js"></script>
+    <script src="../static/constants.js"></script>
     <link href="../static/style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:600|Teko:500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Orbitron:400,700" rel="stylesheet">
@@ -32,7 +32,7 @@
     <meta content="../static/img/favicon/browserconfig.xml" name="msapplication-config">
 </head>
 
-<body onload="labelMainPageElements()">
+<body onload="setupIndexPage()">
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark d-flex justify-content-between">
     <div class="p-2"><a class="navbar-brand" href="mailto:kaulketh@gmail.com">&copy; Kauli1220 </a></div>
     <div class="p-2"><span id="subtitle">Control a Raspberry Pi with your Browser</span></div>
@@ -40,49 +40,40 @@
 <div class="container">
     <div class="col">
         <div class="row">
-            <header class="btn btn-block badge-pill" id="status" type="text">
+            <header class="btn btn-block badge-pill" id="status" type="header"><p> {{status}} </p>
             </header>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <button class="btn btn-block btn-outline-primary" id="btnToggle1" type="button">
+            <button class="btn btn-block btn-outline-primary" id="clockBtn" type="button">
             </button>
-            <div class="row"></div>
-            <button class="btn btn-block btn-outline-primary" id="btnToggle2" type="button">
+            <button class="btn btn-block btn-outline-primary" id="theaterBtn" type="button">
             </button>
-        </div>
-        <div class="col">
-            <button class="btn btn-block btn-outline-primary" id="adventBtn" onclick="ajaxRequest('/advent')"
-                    type="button">
-            </button>
-            <div class="row"></div>
-            <button class="btn btn-block btn-outline-primary" id="animationBtn" onclick="ajaxRequest('/animation')"
-                    type="button">
+            <button class="btn btn-block btn-outline-primary" id="adventBtn" type="button">
             </button>
         </div>
         <div class="col">
-            <button class="btn btn-block btn-outline-primary" id="clockBtn" onclick="ajaxRequest('/clock')"
-                    type="button">
+            <button class="btn btn-block btn-outline-primary" id="clockBtn2" type="button">
             </button>
-            <div class="row"></div>
-            <button class="btn btn-block btn-outline-primary" id="xmasBtn" onclick="ajaxRequest('/xmas')" type="button">
+            <button class="btn btn-block btn-outline-primary" id="candleBtn" type="button">
+            </button>
+            <button class="btn btn-block btn-outline-primary" id="circusBtn" type="button">
             </button>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <button class="btn btn-block btn-outline-info" id="stopBtn" onclick="ajaxRequest('/stop')" type="button">
+            <button class="btn btn-block btn-outline-info" id="stopBtn" type="button">
             </button>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <button class="btn btn-block btn-outline-secondary" id="serviceBtn" onclick="goto('service')" type="button">
+            <button class="btn btn-block btn-outline-secondary" id="serviceBtn" type="button">
             </button>
         </div>
     </div>
-    <div class="row"></div>
 </div>
 </body>
 </html>

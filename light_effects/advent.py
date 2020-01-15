@@ -16,18 +16,17 @@ __status__ = "Development"
 log = logger.get_logger("Advent")
 stop_flag = None
 
-log.debug("Initialize LED strip.")
-strip = get_strip()
-
 
 def stop_advent():
     global stop_flag
     stop_flag = True
     log.debug('advent stop_flag was set to ' + str(stop_flag))
-    return
+    return stop_flag
 
 
 def run_advent():
+    from light_effects import get_strip
+    strip = get_strip()
     # TODO: advent function
     global stop_flag
     stop_flag = False

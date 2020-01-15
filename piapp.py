@@ -9,10 +9,11 @@ import sys
 import time
 from multiprocessing import Process, Queue
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 import logger
-from functions import func_animate, functions_off, func_advent, func_xmas, func_clock
+from functions import func_theater, functions_off, func_advent, func_circus, func_clock1, func_clock2, func_candles, \
+    get_status
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
@@ -20,11 +21,14 @@ __email__ = "kaulketh@gmail.com"
 __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
 
+from light_effects.advent import run_advent
+
 some_queue = None
-any_process = None
-animation_proc = None
+candles_proc = None
+theater_proc = None
 clock_proc = None
-xmas_proc = None
+clock2_proc = None
+circus_proc = None
 advent_proc = None
 running_processes = []
 
@@ -34,13 +38,13 @@ app = Flask(app_name)
 
 
 # region pages
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
     log.info("Browse UI")
-    return render_template("ui.html")
+    return render_template("index.html", status=get_status().upper())
 
 
-@app.route("/service")
+@app.route("/service", methods=['GET', 'POST'])
 def service():
     log.info("Browse Service")
     return render_template("service.html")
@@ -48,19 +52,17 @@ def service():
 
 
 # region functions
-@app.route("/animation", methods=["GET"])
-def animation_view():
-    stop_everything()
-    msg = "animation process called"
+@app.route("/theater", methods=["GET"])
+def theater_view():
+    msg = "theater process called"
     log.info(msg)
-    global animation_proc
-    animation_proc = start_process(func_animate())
+    global theater_proc
+    theater_proc = start_process(func_theater())
     return msg
 
 
 @app.route("/advent", methods=["GET"])
 def advent_view():
-    stop_everything()
     msg = "advent calendar process called"
     log.info(msg)
     global advent_proc
@@ -68,28 +70,44 @@ def advent_view():
     return msg
 
 
-@app.route("/clock", methods=["GET"])
+@app.route("/clock 1", methods=["GET"])
 def clock_view():
-    stop_everything()
-    msg = "clock process called"
+    msg = "clock 1 process called"
     log.info(msg)
     global clock_proc
-    clock_proc = start_process(func_clock())
+    clock_proc = start_process(func_clock1())
     return msg
 
 
-@app.route("/xmas", methods=["GET"])
-def xmas_view():
-    stop_everything()
-    msg = "xmas process called"
+@app.route("/clock 2", methods=["GET"])
+def clock2_view():
+    msg = "clock 2 process called"
     log.info(msg)
-    global xmas_proc
-    xmas_proc = start_process(func_xmas())
+    global clock2_proc
+    clock2_proc = start_process(func_clock2())
     return msg
 
 
-@app.route("/stop", methods=["GET"])
-def shutdown():
+@app.route("/circus", methods=["GET"])
+def xmas_view():
+    msg = "circus process called"
+    log.info(msg)
+    global circus_proc
+    circus_proc = start_process(func_circus())
+    return msg
+
+
+@app.route("/candles", methods=["GET"])
+def candles_view():
+    msg = "candles process called"
+    log.info(msg)
+    global candles_proc
+    candles_proc = start_process(func_candles())
+    return msg
+
+
+@app.route("/all off", methods=["GET"])
+def off_view():
     stop_everything()
     msg = "all should paused"
     log.info(msg)
@@ -97,7 +115,7 @@ def shutdown():
 
 
 # noinspection PyBroadException
-@app.route("/restart", methods=["GET"])
+@app.route("/restart", methods=["GET", 'POST'])
 def restart():
     stop_everything()
     try:
@@ -111,12 +129,16 @@ def restart():
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt: {0}", exec_info=1)
 
+    return render_template("index.html", status="off".upper())
+
 
 @app.route("/reboot", methods=["GET"])
 def reboot():
     msg = "device reboot"
     log.info(msg)
     os.system('sudo reboot')
+
+
 # endregion
 
 
@@ -165,7 +187,7 @@ def start_flask_app(any_queue):
         some_queue = any_queue
         log.info("start FLASK app")
         app.run(
-            debug=False,
+            debug=True,
             host='0.0.0.0',
             port=5000,
             threaded=True)
@@ -173,6 +195,8 @@ def start_flask_app(any_queue):
         log.error("Failed to start FLASK app: {0}", exec_info=1)
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt: {0}", exec_info=1)
+
+
 # endregion
 
 

@@ -9,14 +9,13 @@ import time
 from neopixel import *
 
 import logger
+from light_effects.effects import color_wipe
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
 
 __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
-
-from light_effects.led_strip import get_strip
 
 hR = 200
 hG = 0
@@ -33,40 +32,21 @@ sB = 11
 log = logger.get_logger("Clock")
 stop_flag = None
 
-log.debug("Initialize LED strip.")
-strip = get_strip()
-
-
-# noinspection PyShadowingNames
-def color_wipe(strip, color, wait_ms=50):
-    """Wipe color across display a pixel at a time."""
-    for i in range(strip.numPixels()):
-        strip.setPixelColor(i, color)
-        strip.show()
-        time.sleep(wait_ms / 1000.0)
-    return
-
 
 def stop_clock():
     global stop_flag
     stop_flag = True
     log.debug('clock stop_flag was set to ' + str(stop_flag))
-    # color_wipe(strip, Color(0, 0, 0), 10)
-    return
+    return stop_flag
 
 
 def run_clock():
+    from light_effects import get_strip
+    strip = get_strip()
+
     global stop_flag
     stop_flag = False
-    log.info('clock started, stop_flag = ' + str(stop_flag))
-    return
-
-
-# disabled temporarily
-def run_clock_origin():
-    global stop_flag
-    stop_flag = False
-    log.info('clock started, stop_flag = ' + str(stop_flag))
+    log.info('clock 1 started, stop_flag = ' + str(stop_flag))
 
     for i in range(0, strip.numPixels(), 1):
         strip.setPixelColor(i, Color(0, 0, 0))
@@ -81,7 +61,7 @@ def run_clock_origin():
 
             # Low light during given period
             if 8 < int(now.hour) < 18:
-                strip.setBrightness(200)
+                strip.setBrightness(127)
             else:
                 strip.setBrightness(25)
 
@@ -111,7 +91,6 @@ def run_clock_origin():
 
             strip.show()
             time.sleep(0.1)
-            global stop_flag
             if stop_flag:
                 break
 
@@ -124,7 +103,7 @@ def run_clock_origin():
         except Exception:
             log.error("Any error occurs: {0}", exec_info=1)
 
-    log.debug('clock run stopped')
+    log.info('clock 1 run stopped')
     color_wipe(strip, Color(0, 0, 0), 10)
     log.debug('LED stripe cleared')
     return
