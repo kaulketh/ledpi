@@ -32,7 +32,7 @@ running_processes = []
 
 app_name = "PiApp"
 log = logger.get_logger(app_name)
-app = Flask(app_name)
+app = Flask(app_name, template_folder="/home/pi/led/templates")
 
 
 # region pages
@@ -182,6 +182,7 @@ def start_flask_app(any_queue):
         some_queue = any_queue
         log.info("start FLASK app")
         app.run(
+
             debug=False,
             host='0.0.0.0',
             port=5000,

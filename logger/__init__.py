@@ -17,7 +17,7 @@ __status__ = "Development"
 
 
 try:
-    os.makedirs('log')
+    os.makedirs('logs')
 except OSError as e:
     if e.errno != errno.EEXIST:
         raise
