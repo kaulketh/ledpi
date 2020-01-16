@@ -5,6 +5,7 @@ simulation of advent/xmas calendar for 24-LEDs-strip
 """
 import time
 from datetime import date, timedelta, datetime
+from random import randint
 
 from neopixel import Color
 
@@ -21,11 +22,13 @@ __status__ = "Development"
 log = logger.get_logger("Advent")
 stop_flag = None
 # any warm white / no bright yellow
-red = 195
-green = 150
-blue = 50
-div = 20
-favorite_color = Color(green / div, red / div, blue / div)
+fav_red = 195
+fav_green = 150
+fav_blue = 50
+
+adv_red = 255
+adv_green = 30
+adv_blue = 0
 
 
 # from http://stackoverflow.com/questions/2003870/how-can-i-select-all-of-the-sundays-for-a-year-using-python
@@ -42,33 +45,33 @@ def allsundays(year):
 
 
 # noinspection PyBroadException
-def december_cycle(strip):
+def december_cycle(strip, month):
     advent = []
     year = datetime.now().year
 
     try:
         while True:
-            xmas = date(year, 12, 25)
+            # collect advent dates
+            xmas = date(year, month, 25)
             for d in allsundays(year):
                 if d < xmas:
-                    advent.append(d)
-
-            # advent test
-            # for a in advent:
-            #     print str(advent.index(a) + 1) + ".Advent " + str(year) + ": " + str(a)
-            #     color_wipe(strip, Color(green / div, red / div, blue / div), a.day, 15)
-            #     time.sleep(5)
-            #     color_wipe(strip, Color(0, 0, 0), 24, 5)
-            #     time.sleep(5)
-
-            # color_wipe(strip, favorite_color, advent[1].day, 0)
-            # time.sleep(3)
+                    advent.append(d.day)
 
             day = datetime.now().day
-            if strip.numPixels() > day:
-                candle(strip, day)
+            # ensure only the day related LEDs are set as candle
+            if strip.numPixels() >= day:
+                for i in range(day + 1):
+                    div = randint(randint(6, 8), randint(30, 40))
+                    # set up different colors for days
+                    if day in advent:
+                        strip.setPixelColor(i, Color(adv_green / div, adv_red / div, adv_blue / div))
+                    else:
+                        strip.setPixelColor(i, Color(fav_green / div, fav_red / div, fav_blue / div))
+                    strip.show()
+                time.sleep(0.15)
             else:
                 candle(strip, strip.numPixels())
+
             global stop_flag
             if stop_flag:
                 break
@@ -100,12 +103,11 @@ def run_advent():
     while True:
         if month != 12:
             log.warn('Wrong month for xmas/advent animation, it\'s {0}!'.format(time.strftime("%B")))
-            global stop_flag
             while not stop_flag:
                 theater_chase(strip, Color(0, 15, 0))
             clear(strip)
         else:
-            december_cycle(strip)
+            december_cycle(strip, month)
         if stop_flag:
             break
     return

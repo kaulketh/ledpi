@@ -78,7 +78,7 @@ def run_clock2():
                 strip.setPixelColor(
                     i, Color(colorarray[0], colorarray[1], colorarray[2]))
             strip.show()
-            time.sleep(0.1)
+            # time.sleep(0.1)
             if stop_flag:
                 break
 
