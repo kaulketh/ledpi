@@ -128,8 +128,9 @@ def run_circus():
         color_wipe_full(get_strip(), Color(0, 0, 0), 10)
         exit()
 
-    except Exception:
-        log.error("Any error occurs.")
+    except Exception as e:
+        log.error("Any error occurs: " + str(e))
+        exit()
 
     finally:
         # Ensure ws2811_fini is called before the program quits.

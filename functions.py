@@ -5,8 +5,6 @@
 contains methods to call light effect functions
 """
 
-import time
-
 import logger
 from light_effects import stop_light_effects
 from light_effects.advent import run_advent
@@ -23,9 +21,11 @@ __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
 
 log = logger.get_logger("Functions")
+
 stop_flag = None
 running_function = None
 status = None
+
 theater = "theater"
 advent = "advent"
 clock1 = "clock 1"
@@ -33,18 +33,6 @@ clock2 = "clock 2"
 circus = "circus"
 candles = "candles"
 off = "all off"
-
-
-def observe(function):
-    global running_function, stop_flag
-    running_function = function
-    while True:
-        if (not stop_flag) and (running_function == function):
-            log.debug(function + " is running")
-            time.sleep(0.5)
-        else:
-            log.debug(function + " stopped")
-            break
 
 
 def get_status():
@@ -68,7 +56,6 @@ def func_candles():
         global stop_flag
         stop_flag = False
         set_status(candles)
-        #observe(candles)
         run_candles()
         return
 
@@ -78,7 +65,6 @@ def func_circus():
         global stop_flag
         stop_flag = False
         set_status(circus)
-        #observe(circus)
         run_circus()
         return
 
@@ -88,7 +74,6 @@ def func_theater():
         global stop_flag
         stop_flag = False
         set_status(theater)
-        #observe(theater)
         run_theater()
         return
 
@@ -98,7 +83,6 @@ def func_clock1():
         global stop_flag
         stop_flag = False
         set_status(clock1)
-        #observe(clock1)
         run_clock()
         return
 
@@ -108,7 +92,6 @@ def func_clock2():
         global stop_flag
         stop_flag = False
         set_status(clock2)
-        #observe(clock2)
         run_clock2()
     return
 
@@ -118,7 +101,6 @@ def func_advent():
         global stop_flag
         stop_flag = False
         set_status(advent)
-        #observe(advent)
         run_advent()
     return
 

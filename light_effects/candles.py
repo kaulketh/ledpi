@@ -50,8 +50,9 @@ def run_candles():
         log.warn("KeyboardInterrupt")
         exit()
 
-    except Exception:
-        log.error("Any error occurs.")
+    except Exception as e:
+        log.error("Any error occurs: " + str(e))
+        exit()
 
     log.info('candles run stopped')
     color_wipe_full(strip, Color(0, 0, 0), 10)

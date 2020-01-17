@@ -11,7 +11,6 @@ const indexLabels = {
 };
 const serviceLabels = {
     'homeBtn': 'home',
-    'restartBtn': 'restart app',
     'rebootBtn': 'reboot device'
 };
 
@@ -55,7 +54,6 @@ function setupIndexPage() {
 
 function setupServicePage() {
     document.getElementById('homeBtn').setAttribute('onclick', "goto('/')");
-    document.getElementById('restartBtn').setAttribute('onclick', "goto('/');ajaxRequest('/restart')");
     document.getElementById('rebootBtn').setAttribute('onclick', "ajaxRequest('/reboot')");
 
     for (const id in serviceLabels) {

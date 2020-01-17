@@ -134,3 +134,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         if args.clear:
             color_wipe_full(strip, Color(0, 0, 0), 10)
+
+    except Exception as e:
+        print("Any error occurs: " + str(e))
+        exit()

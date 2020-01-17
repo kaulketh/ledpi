@@ -4,13 +4,12 @@
 main script for app and flask
 """
 import os
-import subprocess
-import sys
 import time
-from multiprocessing import Process, Queue
+from multiprocessing import Process
 
 from flask import Flask, render_template
 
+import functions
 import logger
 from functions import func_theater, functions_off, func_advent, func_circus, func_clock1, func_clock2, func_candles, \
     get_status
@@ -21,7 +20,6 @@ __email__ = "kaulketh@gmail.com"
 __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
 
-some_queue = None
 candles_proc = None
 theater_proc = None
 clock_proc = None
@@ -57,7 +55,7 @@ def theater_view():
     msg = "theater process called"
     log.info(msg)
     global theater_proc
-    theater_proc = start_process(func_theater())
+    theater_proc = start_process(func_theater(), functions.theater)
     return msg
 
 
@@ -66,7 +64,7 @@ def advent_view():
     msg = "advent calendar process called"
     log.info(msg)
     global advent_proc
-    advent_proc = start_process(func_advent())
+    advent_proc = start_process(func_advent(), functions.advent)
     return msg
 
 
@@ -75,7 +73,7 @@ def clock_view():
     msg = "clock 1 process called"
     log.info(msg)
     global clock_proc
-    clock_proc = start_process(func_clock1())
+    clock_proc = start_process(func_clock1(), functions.clock1)
     return msg
 
 
@@ -84,7 +82,7 @@ def clock2_view():
     msg = "clock 2 process called"
     log.info(msg)
     global clock2_proc
-    clock2_proc = start_process(func_clock2())
+    clock2_proc = start_process(func_clock2(), functions.clock2)
     return msg
 
 
@@ -93,7 +91,7 @@ def xmas_view():
     msg = "circus process called"
     log.info(msg)
     global circus_proc
-    circus_proc = start_process(func_circus())
+    circus_proc = start_process(func_circus(), functions.circus)
     return msg
 
 
@@ -102,7 +100,7 @@ def candles_view():
     msg = "candles process called"
     log.info(msg)
     global candles_proc
-    candles_proc = start_process(func_candles())
+    candles_proc = start_process(func_candles(), functions.candles)
     return msg
 
 
@@ -112,22 +110,6 @@ def off_view():
     msg = "all should paused"
     log.info(msg)
     return msg
-
-
-# noinspection PyBroadException
-@app.route("/restart")
-def restart():
-    stop_everything()
-    try:
-        msg = "Flask restart"
-        some_queue.put(msg)
-        log.info(msg)
-        return msg
-    except Exception:
-        log.error("Failed in restart")
-        return "Restart failed"
-    except KeyboardInterrupt:
-        log.warn("KeyboardInterrupt")
 
 
 # TODO: implement hidden functions for service and maintenance
@@ -162,17 +144,18 @@ def reboot():
 
 
 # region methods
-def start_process(target):
+def start_process(ftarget, fname):
     # noinspection PyBroadException
     try:
         global running_processes
-        proc = Process(target=target)
-        log.debug('start and append to list: ' + proc.name)
+        proc = Process(target=ftarget, name=fname)
+        log.debug('start and append to process list: ' + proc.name)
         running_processes.append(proc)
+        proc.daemon = True
         proc.start()
         return proc
     except Exception:
-        log.error("Failed to start process.")
+        log.error("Failed to start process " + fname)
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt")
 
@@ -180,9 +163,9 @@ def start_process(target):
 def stop_process(process_to_stop):
     global running_processes
     running_processes.remove(process_to_stop)
-    log.debug(process_to_stop.name + ' removed from list')
+    log.debug(process_to_stop.name + ' removed from process list')
     process_to_stop.terminate()
-    log.debug(process_to_stop.name + ' terminated')
+    log.debug(process_to_stop.name + ' process terminated')
     return process_to_stop
 
 
@@ -198,39 +181,25 @@ def stop_everything():
         log.debug('nothing to kill ;-)')
 
 
-def start_flask_app(any_queue):
+def start_flask_app():
     # noinspection PyBroadException
     try:
-        global some_queue
-        some_queue = any_queue
-        log.info("start FLASK app")
         app.run(
-
-            debug=False,
+            debug=True,
             host='0.0.0.0',
             port=5000,
             threaded=True)
-    except Exception:
-        log.error("Failed to start FLASK app.")
+    except Exception as e:
+        log.error("Failed to start FLASK app: " + str(e))
+        exit()
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt")
+        exit()
+    log.info("FLASK app started")
 
 
 # endregion
 
 
 if __name__ == '__main__':
-
-    queue = Queue()
-    flask_proc = Process(target=start_flask_app, args=(queue,))
-    flask_proc.start()
-    log.debug("FLASK process started")
-    while True:  # waiting stop_flag, if there is no call than sleep, otherwise break
-        if queue.empty():
-            time.sleep(0.5)
-        else:
-            break
-    flask_proc.terminate()  # terminate flask app and then restart the app on subprocess
-    log.debug("FLASK process terminated")
-    args = [sys.executable] + [sys.argv[0]]
-    subprocess.call(args)
+    start_flask_app()

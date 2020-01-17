@@ -21,6 +21,7 @@ __status__ = "Development"
 
 log = logger.get_logger("Advent")
 stop_flag = None
+
 # any warm white / no bright yellow
 fav_red = 195
 fav_green = 150
@@ -50,20 +51,22 @@ def december_cycle(strip, month):
     year = datetime.now().year
 
     try:
-        while True:
-            # collect advent dates
-            xmas = date(year, month, 25)
-            for d in allsundays(year):
-                if d < xmas:
-                    advent.append(d.day)
+        # collect advent dates
+        xmas = date(year, month, 25)
+        for d in allsundays(year):
+            if d < xmas:
+                advent.append(d.day)
 
+        while True:
+            # advent = [2, 4, 6, 8, 10, 12, 14, 16]  # uncomment and adapt to test
             day = datetime.now().day
+            # day = 22  # uncomment and adapt to test
             # ensure only the day related LEDs are set as candle
-            if strip.numPixels() >= day:
-                for i in range(day + 1):
+            if strip.numPixels() > day:
+                for i in range(day):
                     div = randint(randint(6, 8), randint(30, 40))
                     # set up different colors for days
-                    if day in advent:
+                    if (i + 1) in advent:
                         strip.setPixelColor(i, Color(adv_green / div, adv_red / div, adv_blue / div))
                     else:
                         strip.setPixelColor(i, Color(fav_green / div, fav_red / div, fav_blue / div))
@@ -81,8 +84,8 @@ def december_cycle(strip, month):
         color_wipe_full(strip, Color(0, 0, 0), 10)
         exit()
 
-    except Exception:
-        log.error("Any error occurs.")
+    except Exception as e:
+        log.error("Any error occurs: " + str(e))
         exit()
 
 
@@ -95,6 +98,7 @@ def stop_advent():
 
 def run_advent():
     month = datetime.now().month
+    # month = 12  # uncomment to test
     from light_effects.led_strip import get_strip
     strip = get_strip()
     global stop_flag

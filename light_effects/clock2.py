@@ -87,8 +87,9 @@ def run_clock2():
             color_wipe_full(strip, Color(0, 0, 0), 10)
             exit()
 
-        except Exception:
-            log.error("Any error occurs.")
+        except Exception as e:
+            log.error("Any error occurs: " + str(e))
+            exit()
 
     log.info('clock 2 run stopped')
     color_wipe_full(strip, Color(0, 0, 0), 10)

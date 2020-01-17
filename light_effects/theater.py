@@ -27,7 +27,7 @@ def stop_theater():
 def run_theater():
     from neopixel import Color
     from light_effects import get_strip
-    from light_effects.effects import color_wipe_full, theater_chase, theater_chase_rainbow, rainbow_cycle, rainbow
+    from light_effects.effects import color_wipe_full, theater_chase
 
     strip = get_strip()
     global stop_flag
@@ -40,68 +40,37 @@ def run_theater():
         try:
             if stop_flag:
                 break
+
             color_wipe_full(strip, Color(127, 0, 0))  # Green wipe
-            # if stop_flag:
-            #     break
-            #rainbow_cycle(strip)
             if stop_flag:
                 break
             color_wipe_full(strip, Color(0, 127, 0))  # Red wipe
             if stop_flag:
                 break
-            #rainbow(strip)
-            # if stop_flag:
-            #     break
+
             color_wipe_full(strip, Color(0, 0, 127))  # Blue wipe
             if stop_flag:
                 break
             theater_chase(strip, Color(127, 127, 127))  # White theater chase
             if stop_flag:
                 break
-            #color_wipe_full(strip, Color(0, 0, 127))  # Blue wipe
-            # if stop_flag:
-            #     break
-            #theater_chase(strip, Color(127, 0, 0))  # Green theater chase
-            # if stop_flag:
-            #     break
-            #color_wipe_full(strip, Color(0, 127, 0))  # Red wipe
-            # if stop_flag:
-            #     break
+
             theater_chase(strip, Color(0, 0, 127))  # Blue theater chase
             if stop_flag:
                 break
-            # color_wipe_full(strip, Color(127, 0, 0))  # Green wipe
-            # if stop_flag:
-            #     break
-            # theater_chase(strip, Color(80, 80, 80))  # White theater chase
-            # if stop_flag:
-            #     break
-            # color_wipe_full(strip, Color(0, 0, 80))  # Blue wipe
-            # if stop_flag:
-            #     break
+
             theater_chase(strip, Color(80, 0, 0))  # Green theater chase
             if stop_flag:
                 break
-            # color_wipe_full(strip, Color(0, 80, 0))  # Red wipe
-            # if stop_flag:
-            #     break
-            # theater_chase(strip, Color(0, 0, 80))  # Blue theater chase
-            # if stop_flag:
-            #     break
-            # color_wipe_full(strip, Color(80, 0, 0))  # Green wipe
-            # if stop_flag:
-            #     break
-            # #theater_chase_rainbow(strip)
-            # if stop_flag:
-            #     break
 
         except KeyboardInterrupt:
             log.warn("KeyboardInterrupt")
             color_wipe_full(strip, Color(0, 0, 0), 10)
             exit()
 
-        except Exception:
-            log.error("Any error occurs.")
+        except Exception as e:
+            log.error("Any error occurs: " + str(e))
+            exit()
 
     log.info('theater run stopped')
     color_wipe_full(strip, Color(0, 0, 0), 10)
