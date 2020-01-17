@@ -32,7 +32,7 @@ running_processes = []
 
 app_name = "PiApp"
 log = logger.get_logger(app_name)
-app = Flask(app_name, template_folder="/home/pi/led/templates")
+app = Flask(app_name, template_folder="/home/pi/led/templates", static_folder="/home/pi/led/static")
 
 
 # region pages
@@ -46,6 +46,8 @@ def index():
 def service():
     log.info("Browse Service")
     return render_template("service.html")
+
+
 # endregion
 
 
@@ -129,12 +131,33 @@ def restart():
 
 
 # TODO: implement hidden functions for service and maintenance
+@app.route("/help", methods=["GET"])
+def help():
+    # implement help
+    pass
+
+
+@app.route("/panic", methods=["GET"])
+def panic():
+    reboot()
+
+
+@app.route("/shutdown <param>", methods=["GET"])
+def sutdown(param):
+    stop_everything()
+    msg = "device shut down with parameter: " + param
+    log.info(msg)
+    os.system('sudo shutdown ' + param)
+
+
 @app.route("/reboot", methods=["GET"])
 def reboot():
     stop_everything()
     msg = "device reboot"
     log.info(msg)
     os.system('sudo reboot')
+
+
 # endregion
 
 
@@ -191,6 +214,8 @@ def start_flask_app(any_queue):
         log.error("Failed to start FLASK app.")
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt")
+
+
 # endregion
 
 
