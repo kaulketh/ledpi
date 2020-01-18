@@ -8,7 +8,7 @@ import time
 from multiprocessing import Process
 
 from flask import Flask, render_template
-
+import flask_monitoringdashboard as dashbord
 import functions
 import logger
 from functions import func_theater, functions_off, func_advent, func_circus, func_clock1, func_clock2, func_candles, \
@@ -31,6 +31,7 @@ running_processes = []
 app_name = "PiApp"
 log = logger.get_logger(app_name)
 app = Flask(app_name, template_folder="/home/pi/led/templates", static_folder="/home/pi/led/static")
+dashbord.bind(app)
 
 
 # region pages
@@ -87,7 +88,7 @@ def clock2_view():
 
 
 @app.route("/circus", methods=["GET"])
-def xmas_view():
+def circus_view():
     msg = "circus process called"
     log.info(msg)
     global circus_proc
