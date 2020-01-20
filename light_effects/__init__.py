@@ -3,7 +3,7 @@
 """
 light_effects/__init__py
 """
-from led_strip import get_strip
+from light_effects.led_strip import get_strip
 from light_effects.advent import stop_advent
 from light_effects.candles import stop_candles
 from light_effects.effects import clear

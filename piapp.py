@@ -8,7 +8,8 @@ import time
 from multiprocessing import Process
 
 from flask import Flask, render_template
-import flask_monitoringdashboard as dashbord
+import flask_monitoringdashboard as dashboard
+
 import functions
 import logger
 from functions import func_theater, functions_off, func_advent, func_circus, func_clock1, func_clock2, func_candles, \
@@ -30,30 +31,28 @@ running_processes = []
 
 app_name = "PiApp"
 log = logger.get_logger(app_name)
-app = Flask(app_name, template_folder="/home/pi/led/templates", static_folder="/home/pi/led/static")
-dashbord.bind(app)
+app = Flask(app_name)
+dashboard.bind(app)
 
 
 # region pages
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    log.info("Browse UI")
+    log.info("Browse start page")
     return render_template("index.html", status=get_status().upper())
 
 
 @app.route("/service", methods=['GET'])
 def service():
-    log.info("Browse Service")
+    log.info("Browse service page")
     return render_template("service.html")
-
-
 # endregion
 
 
 # region functions
 @app.route("/theater", methods=["GET"])
 def theater_view():
-    msg = "theater process called"
+    msg = "Theater process called"
     log.info(msg)
     global theater_proc
     theater_proc = start_process(func_theater(), functions.theater)
@@ -62,7 +61,7 @@ def theater_view():
 
 @app.route("/advent", methods=["GET"])
 def advent_view():
-    msg = "advent calendar process called"
+    msg = "Advent calendar process called"
     log.info(msg)
     global advent_proc
     advent_proc = start_process(func_advent(), functions.advent)
@@ -71,7 +70,7 @@ def advent_view():
 
 @app.route("/clock 1", methods=["GET"])
 def clock_view():
-    msg = "clock 1 process called"
+    msg = "Clock 1 process called"
     log.info(msg)
     global clock_proc
     clock_proc = start_process(func_clock1(), functions.clock1)
@@ -80,7 +79,7 @@ def clock_view():
 
 @app.route("/clock 2", methods=["GET"])
 def clock2_view():
-    msg = "clock 2 process called"
+    msg = "Clock 2 process called"
     log.info(msg)
     global clock2_proc
     clock2_proc = start_process(func_clock2(), functions.clock2)
@@ -89,7 +88,7 @@ def clock2_view():
 
 @app.route("/circus", methods=["GET"])
 def circus_view():
-    msg = "circus process called"
+    msg = "Circus process called"
     log.info(msg)
     global circus_proc
     circus_proc = start_process(func_circus(), functions.circus)
@@ -98,7 +97,7 @@ def circus_view():
 
 @app.route("/candles", methods=["GET"])
 def candles_view():
-    msg = "candles process called"
+    msg = "Candles process called"
     log.info(msg)
     global candles_proc
     candles_proc = start_process(func_candles(), functions.candles)
@@ -108,7 +107,7 @@ def candles_view():
 @app.route("/all off", methods=["GET"])
 def off_view():
     stop_everything()
-    msg = "all should paused"
+    msg = "All should paused"
     log.info(msg)
     return msg
 
@@ -128,7 +127,7 @@ def panic():
 @app.route("/shutdown <param>", methods=["GET"])
 def sutdown(param):
     stop_everything()
-    msg = "device shut down with parameter: " + param
+    msg = "Device shut down with parameter: " + param
     log.info(msg)
     os.system('sudo shutdown ' + param)
 
@@ -136,27 +135,24 @@ def sutdown(param):
 @app.route("/reboot", methods=["GET"])
 def reboot():
     stop_everything()
-    msg = "device reboot"
+    msg = "Device reboot"
     log.info(msg)
     os.system('sudo reboot')
-
-
 # endregion
 
 
 # region methods
 def start_process(ftarget, fname):
-    # noinspection PyBroadException
     try:
         global running_processes
         proc = Process(target=ftarget, name=fname)
-        log.debug('start and append to process list: ' + proc.name)
+        log.debug('Start and append to process list: ' + proc.name)
         running_processes.append(proc)
         proc.daemon = True
         proc.start()
         return proc
-    except Exception:
-        log.error("Failed to start process " + fname)
+    except Exception as e:
+        log.error("Failed to start process " + fname + ': ' + str(e))
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt")
 
@@ -176,14 +172,13 @@ def stop_everything():
     global running_processes
     if running_processes.__len__() > 0:
         for p in running_processes:
-            log.debug("stopping " + p.name)
+            log.debug("Stopping " + p.name)
             stop_process(p)
     else:
-        log.debug('nothing to kill ;-)')
+        log.debug('Nothing to kill ;-)')
 
 
 def start_flask_app():
-    # noinspection PyBroadException
     try:
         app.run(
             debug=True,
@@ -197,8 +192,6 @@ def start_flask_app():
         log.warn("KeyboardInterrupt")
         exit()
     log.info("FLASK app started")
-
-
 # endregion
 
 

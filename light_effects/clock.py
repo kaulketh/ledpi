@@ -4,7 +4,6 @@
 clock for 24-LEDs-strip
 """
 import datetime
-import time
 
 from neopixel import *
 

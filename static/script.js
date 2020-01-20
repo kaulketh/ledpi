@@ -1,5 +1,4 @@
 const indexLabels = {
-    // 'status': '------',
     'candleBtn': 'candles',
     'clockBtn': 'clock 1',
     'adventBtn': 'advent',
@@ -11,7 +10,8 @@ const indexLabels = {
 };
 const serviceLabels = {
     'homeBtn': 'home',
-    'rebootBtn': 'reboot device'
+    'rebootBtn': 'reboot device',
+    'dashboardBtn': 'monitoring dashboard'
 };
 
 const requestIndexFunctions = {
@@ -53,7 +53,8 @@ function goto(url) {
 
 function setupIndexPage() {
     try {
-        document.getElementById('serviceBtn').setAttribute('onclick', "goto('/service')");
+        document.getElementById('serviceBtn').setAttribute('onclick', "goto('/service',)");
+
         try {
             for (const id in requestIndexFunctions) {
                 document.getElementById(id).setAttribute('onclick', "ajaxRequest(requestIndexFunctions[id], this)");
@@ -75,7 +76,8 @@ function setupIndexPage() {
 
 function setupServicePage() {
     try {
-        document.getElementById('homeBtn').setAttribute('onclick', "goto('/')");
+        document.getElementById('homeBtn').setAttribute('onclick', "goto('/',)");
+        document.getElementById('dashboardBtn').setAttribute('onclick', "window.open('../dashboard')");
         document.getElementById('rebootBtn').setAttribute('onclick', "ajaxRequest('/reboot')");
 
         try {
@@ -102,6 +104,3 @@ window.onload = function () {
         console.log(e)
     }
 };
-
-
-
