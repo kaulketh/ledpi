@@ -22,8 +22,8 @@ log = logger.get_logger("Candles")
 stop_flag = None
 # any warm white / no bright yellow
 red = 195
-green = 150
-blue = 50
+green = 125
+blue = 30
 
 
 def stop_candles():
@@ -60,13 +60,19 @@ def run_candles():
     return
 
 
+def percent():
+    scope = randint(3, 10)
+    return float(scope) / float(100)
+
+
 # candle lights from 0 to leds
 def candle(strip, leds):
+    #for turns in range(leds):
     for i in range(leds):
-        div = randint(randint(6, 8), randint(30, 40))
-        strip.setPixelColor(i, Color(green / div, red / div, blue / div))
-    strip.show()
-    time.sleep(0.15)
+        p = percent()
+        strip.setPixelColor(i, Color(int(green * p), int(red * p), int(blue * p)))
+        strip.show()
+    time.sleep(randint(13, 15) / 100.0)
 
 
 if __name__ == '__main__':

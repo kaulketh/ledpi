@@ -1,14 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-clock for 24-LEDs-strip
+another clock for 24-LEDs-strip
 """
 import datetime
+import time
 
 from neopixel import *
 
 import logger
-from light_effects.effects import color_wipe_full
+from light_effects.effects import color_wipe_full, clear
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
@@ -16,17 +17,20 @@ __email__ = "kaulketh@gmail.com"
 __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
 
-hR = 200
-hG = 0
+# color hours
+hR = 100
+hG = 20
 hB = 0
 
-mR = 0
+# color minutes
+mR = 20
 mG = 0
-mB = 200
+mB = 100
 
-sR = 184
-sG = 134
-sB = 11
+# color seconds
+sR = 6
+sG = 30
+sB = 10
 
 log = logger.get_logger("Clock")
 stop_flag = None
@@ -35,7 +39,7 @@ stop_flag = None
 def stop_clock():
     global stop_flag
     stop_flag = True
-    log.debug('clock stop_flag was set to ' + str(stop_flag))
+    log.debug('clock 1 stop_flag was set to ' + str(stop_flag))
     return stop_flag
 
 
@@ -54,42 +58,27 @@ def run_clock():
         # noinspection PyBroadException
         try:
             now = datetime.datetime.now()
-            hour = int(int(now.hour) % 12 * 2)
-            minute = (int(int(now.minute) / 5 % 12 * 2)) + 1
-            second = int(int(now.second) / 2.5)
+            led_for_hour = int(int(now.hour) % 12 * 2)
+            led_for_minute = int(round(now.minute / 2.5))
+            leds_per_2500ms = int(round(now.second / 2.5))
 
             # Low light during given period
             if 8 < int(now.hour) < 18:
                 strip.setBrightness(127)
             else:
-                strip.setBrightness(25)
+                strip.setBrightness(50)
 
-            for i in range(0, strip.numPixels(), 1):
+            __seconds(leds_per_2500ms, strip)
 
-                # hour
-                strip.setPixelColorRGB(hour, hG, hR, hB)
+            __minute(led_for_minute, led_for_hour, strip)
 
-                # minute
-                if minute == hour:
-                    # TODO doesnt work
-                    strip.setPixelColorRGB(minute + 1, mG, mR, mB)
-                else:
-                    strip.setPixelColorRGB(minute, mG, mR, mB)
-
-                if minute > 30:
-                    if hour <= 22:
-                        strip.setPixelColorRGB(hour + 1, hG, hR, hB)
-                    else:
-                        strip.setPixelColorRGB(0, hG, hR, hB)
-
-                # second
-                if i == second:
-                    strip.setPixelColorRGB(i, sG, sR, sB)
-                else:
-                    strip.setPixelColorRGB(i, 0, 0, 0)
+            __hour(led_for_hour, led_for_minute, strip)
 
             strip.show()
-            # time.sleep(0.1)
+            if leds_per_2500ms == strip.numPixels():
+                time.sleep(1.5)
+                clear(strip)
+
             if stop_flag:
                 break
 
@@ -107,6 +96,62 @@ def run_clock():
     color_wipe_full(strip, Color(0, 0, 0), 10)
     log.debug('LED stripe cleared')
     return
+
+
+def __wipe(strip, wait_ms=50, color=Color(0, 0, 0)):
+    for i in range(strip.numPixels()):
+        strip.setPixelColor(i, color)
+        strip.show()
+        time.sleep(wait_ms / 1000.0)
+
+
+def __clear(strip):
+    for i in range(0, strip.numPixels()):
+        strip.setPixelColor(i, Color(0, 0, 0))
+
+
+def __seconds(leds_per_2500ms, strip):
+    for led in range(0, leds_per_2500ms, 1):
+        if 0 < (led + 1) < strip.numPixels():
+            strip.setPixelColorRGB(led + 1, sG, sR, sB)
+        if (led + 1) == strip.numPixels():
+            strip.setPixelColorRGB(0, sG, sR, sB)
+
+
+def __minute(led, led_hour, strip):
+    if led < strip.numPixels():
+        if led == led_hour:
+            __set_minute_led_before_and_after(strip, led)
+        else:
+            strip.setPixelColorRGB(led, mG, mR, mB)
+    if led >= strip.numPixels():
+        if led == led_hour:
+            __set_minute_led_before_and_after(strip, led_hour)
+            strip.setPixelColorRGB(0, mG, mR, mB)
+        else:
+            strip.setPixelColorRGB(0, mG, mR, mB)
+
+
+def __set_minute_led_before_and_after(strip, led):
+    strip.setPixelColorRGB(led - 1, int(mG / 5), int(mR / 5), int(mB / 5))
+    strip.setPixelColorRGB(led + 1, int(mG / 5), int(mR / 5), int(mB / 5))
+
+
+def __hour(led, led_minute, strip):
+    if 0 < led < strip.numPixels():
+        # past half
+        if led_minute > 12:
+            strip.setPixelColorRGB(led, hG, hR, hB)
+            strip.setPixelColorRGB(led + 1, int(hG / 5), int(hR / 5), int(hB / 5))
+        # past quarter to next hour
+        if led_minute > 18:
+            strip.setPixelColorRGB(led, int(hG / 5), int(hR / 5), int(hB / 5))
+            strip.setPixelColorRGB(led + 1, hG, hR, hB)
+            strip.setPixelColorRGB(led + 2, int(hG / 5), int(hR / 5), int(hB / 5))
+        else:
+            strip.setPixelColorRGB(led, hG, hR, hB)
+    if led >= strip.numPixels():
+        strip.setPixelColorRGB(0, hG, hR, hB)
 
 
 if __name__ == '__main__':
