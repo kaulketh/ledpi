@@ -6,7 +6,12 @@
  * **Felix Stern** https://tutorials-raspberrypi.de
 ---
 
-### apart from default packages following is required additionally
+### Apart from default packages following is required additionally
 * gcc , make, build-essential, python-dev, git, scons, swig
 * from https://github.com/jgarff/rpi_ws281x clone, compile/build/install neopixel package 
 * flask, flask_monitoringdashboard
+
+### Note
+* It is important to ensure that _numpy_ is installed via _apt_ and version is not newer than 1.16
+* Due installation via _pip_ there could occur problems with Flask if the newest version is used
+ 
