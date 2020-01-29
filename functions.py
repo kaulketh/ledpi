@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 """
@@ -6,13 +6,13 @@ contains methods to call light effect functions
 """
 
 import logger
-from light_effects import stop_light_effects
-from light_effects.advent import run_advent
-from light_effects.candles import run_candles
-from light_effects.theater import run_theater
-from light_effects.clock import run_clock
-from light_effects.clock2 import run_clock2
-from light_effects.circus import run_circus
+from light_effects.advent import run_advent, stop_advent
+from light_effects.candles import run_candles, stop_candles
+from light_effects.rainbow import run_rainbow, stop_rainbow
+from light_effects.clock import run_clock, stop_clock
+from light_effects.clock2 import run_clock2, stop_clock2
+from light_effects.theater import run_theater, stop_theater
+
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
@@ -30,7 +30,7 @@ theater = "theater"
 advent = "advent"
 clock1 = "clock 1"
 clock2 = "clock 2"
-circus = "circus"
+rainbow = "rainbow"
 candles = "candles"
 off = "all off"
 
@@ -60,12 +60,12 @@ def func_candles():
         return
 
 
-def func_circus():
+def func_rainbow():
     if functions_off():
         global stop_flag
         stop_flag = False
-        set_status(circus)
-        run_circus()
+        set_status(rainbow)
+        run_rainbow()
         return
 
 
@@ -106,13 +106,14 @@ def func_advent():
 
 
 def functions_off():
-    log.info("functions off")
-    global running_function, stop_flag
+    global running_function
     running_function = ""
+    global stop_flag
     stop_flag = True
     log.debug('stop_flag: = ' + str(stop_flag))
-    if stop_light_effects():
+    if stop_clock() and stop_clock2() and stop_theater() and stop_advent() and stop_rainbow() and stop_candles():
         set_status(off)
+        log.info("functions off")
         return True
     else:
         return False

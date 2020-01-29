@@ -4,7 +4,7 @@ const indexLabels = {
     'adventBtn': 'advent',
     'theaterBtn': 'theater',
     'clockBtn2': 'clock 2',
-    'circusBtn': 'circus',
+    'rainbowBtn': 'rainbow',
     'stopBtn': 'all off',
     'serviceBtn': 'service'
 };
@@ -20,7 +20,7 @@ const requestIndexFunctions = {
     'adventBtn': '/advent',
     'theaterBtn': '/theater',
     'clockBtn2': '/clock 2',
-    'circusBtn': '/circus',
+    'rainbowBtn': '/rainbow',
     'stopBtn': '/all off'
 };
 

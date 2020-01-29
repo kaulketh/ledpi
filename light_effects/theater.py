@@ -1,10 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-any animation for 24-LEDs-strip
+any animation for 24-LEDs-stripe
 """
 
+from neopixel import Color
+
 import logger
+from light_effects.led_strip import get_strip, reset_strip
+from light_effects.effects import color_wipe_full, theater_chase
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
@@ -25,10 +29,6 @@ def stop_theater():
 
 # noinspection PyBroadException
 def run_theater():
-    from neopixel import Color
-    from light_effects import get_strip
-    from light_effects.effects import color_wipe_full, theater_chase
-
     strip = get_strip()
     global stop_flag
     stop_flag = False
@@ -36,36 +36,23 @@ def run_theater():
     for i in range(0, strip.numPixels(), 1):
         strip.setPixelColor(i, Color(0, 0, 0))
 
-    while True:
+    while not stop_flag:
         try:
-            if stop_flag:
-                break
-
             color_wipe_full(strip, Color(127, 0, 0))  # Green wipe
-            if stop_flag:
-                break
-            color_wipe_full(strip, Color(0, 127, 0))  # Red wipe
-            if stop_flag:
-                break
-
-            color_wipe_full(strip, Color(0, 0, 127))  # Blue wipe
-            if stop_flag:
-                break
-            theater_chase(strip, Color(127, 127, 127))  # White theater chase
-            if stop_flag:
-                break
-
-            theater_chase(strip, Color(0, 0, 127))  # Blue theater chase
-            if stop_flag:
-                break
-
-            theater_chase(strip, Color(80, 0, 0))  # Green theater chase
-            if stop_flag:
-                break
+            if not stop_flag:
+                color_wipe_full(strip, Color(0, 127, 0))  # Red wipe
+            if not stop_flag:
+                color_wipe_full(strip, Color(0, 0, 127))  # Blue wipe
+            if not stop_flag:
+                theater_chase(strip, Color(127, 127, 127))  # White theater chase
+            if not stop_flag:
+                theater_chase(strip, Color(0, 0, 127))  # Blue theater chase
+            if not stop_flag:
+                theater_chase(strip, Color(80, 0, 0))  # Green theater chase
 
         except KeyboardInterrupt:
             log.warn("KeyboardInterrupt")
-            color_wipe_full(strip, Color(0, 0, 0), 10)
+            color_wipe_full(strip, Color(0, 0, 0), 0)
             exit()
 
         except Exception as e:
@@ -73,10 +60,9 @@ def run_theater():
             exit()
 
     log.info('theater run stopped')
-    color_wipe_full(strip, Color(0, 0, 0), 10)
-    log.debug('LED stripe cleared')
+    reset_strip(strip)
     return
 
 
 if __name__ == '__main__':
-    pass
+    run_theater()

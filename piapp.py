@@ -1,18 +1,17 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
 main script for app and flask
 """
 import os
-import time
 from multiprocessing import Process
 
-from flask import Flask, render_template
 import flask_monitoringdashboard as dashboard
+from flask import Flask, render_template
 
 import functions
 import logger
-from functions import func_theater, functions_off, func_advent, func_circus, func_clock1, func_clock2, func_candles, \
+from functions import func_theater, functions_off, func_advent, func_rainbow, func_clock1, func_clock2, func_candles, \
     get_status
 
 __author___ = "Thomas Kaulke"
@@ -25,7 +24,7 @@ candles_proc = None
 theater_proc = None
 clock_proc = None
 clock2_proc = None
-circus_proc = None
+rainbow_proc = None
 advent_proc = None
 running_processes = []
 
@@ -86,12 +85,12 @@ def clock2_view():
     return msg
 
 
-@app.route("/circus", methods=["GET"])
+@app.route("/rainbow", methods=["GET"])
 def circus_view():
-    msg = "Circus process called"
+    msg = "Rainbow process called"
     log.info(msg)
-    global circus_proc
-    circus_proc = start_process(func_circus(), functions.circus)
+    global rainbow_proc
+    rainbow_proc = start_process(func_rainbow(), functions.rainbow)
     return msg
 
 
@@ -114,7 +113,7 @@ def off_view():
 
 # TODO: implement hidden functions for service and maintenance
 @app.route("/help", methods=["GET"])
-def help():
+def help_me():
     # implement help
     pass
 
@@ -167,21 +166,20 @@ def stop_process(process_to_stop):
 
 
 def stop_everything():
-    functions_off()
-    time.sleep(0.5)
-    global running_processes
-    if running_processes.__len__() > 0:
-        for p in running_processes:
-            log.debug("Stopping " + p.name)
-            stop_process(p)
-    else:
-        log.debug('Nothing to kill ;-)')
+    if functions_off():
+        global running_processes
+        if running_processes.__len__() > 0:
+            for p in running_processes:
+                log.debug("Stopping " + p.name)
+                stop_process(p)
+        else:
+            log.debug('Nothing to kill ;-)')
 
 
 def start_flask_app():
     try:
         app.run(
-            debug=True,
+            debug=False,
             host='0.0.0.0',
             port=5000,
             threaded=True)

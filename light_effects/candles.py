@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-any animation for 24-LEDs-strip
+any animation for 24-LEDs-stripe
 """
 import time
 from random import randint
@@ -9,14 +9,13 @@ from random import randint
 from neopixel import Color
 
 import logger
+from light_effects.led_strip import get_strip, reset_strip
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
 
 __maintainer___ = "Thomas Kaulke"
 __status__ = "Development"
-
-from light_effects.effects import color_wipe_full
 
 log = logger.get_logger("Candles")
 stop_flag = None
@@ -35,16 +34,15 @@ def stop_candles():
 
 # noinspection PyBroadException
 def run_candles():
-    from light_effects import get_strip
     strip = get_strip()
     global stop_flag
     stop_flag = False
     log.info('candles started, stop_flag = ' + str(stop_flag))
+    for i in range(0, strip.numPixels(), 1):
+        strip.setPixelColor(i, Color(0, 0, 0))
     try:
-        while True:
+        while not stop_flag:
             candle(strip, strip.numPixels())
-            if stop_flag:
-                break
 
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt")
@@ -55,8 +53,7 @@ def run_candles():
         exit()
 
     log.info('candles run stopped')
-    color_wipe_full(strip, Color(0, 0, 0), 10)
-    log.debug('LED stripe cleared')
+    reset_strip(strip)
     return
 
 
@@ -67,13 +64,13 @@ def percent():
 
 # candle lights from 0 to leds
 def candle(strip, leds):
-    #for turns in range(leds):
-    for i in range(leds):
-        p = percent()
-        strip.setPixelColor(i, Color(int(green * p), int(red * p), int(blue * p)))
+    for turns in range(leds):
+        for i in range(leds):
+            p = percent()
+            strip.setPixelColor(i, Color(int(green * p), int(red * p), int(blue * p)))
         strip.show()
     time.sleep(randint(13, 15) / 100.0)
 
 
 if __name__ == '__main__':
-    pass
+    run_candles()

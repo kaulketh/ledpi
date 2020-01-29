@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-simulation of advent/xmas calendar for 24-LEDs-strip
+simulation of advent/xmas calendar for 24-LEDs-stripe
 """
 import time
 from datetime import date, timedelta, datetime
@@ -10,8 +10,9 @@ from random import randint
 from neopixel import Color
 
 import logger
+from light_effects.led_strip import get_strip, reset_strip
 from light_effects.candles import candle, percent
-from light_effects.effects import color_wipe_full, clear, theater_chase
+from light_effects.effects import color_wipe_full, theater_chase
 
 __author___ = "Thomas Kaulke"
 __email__ = "kaulketh@gmail.com"
@@ -46,10 +47,11 @@ def allsundays(year):
 
 
 # noinspection PyBroadException
-def december_cycle(strip, month):
+def december_cycle(month, strip):
+    global stop_flag
+    stop_flag = False
     advent = []
     year = datetime.now().year
-
     try:
         # collect advent dates
         xmas = date(year, month, 25)
@@ -57,7 +59,7 @@ def december_cycle(strip, month):
             if d < xmas:
                 advent.append(d.day)
 
-        while True:
+        while not stop_flag:
             # advent = [2, 8, 12, 16]  # uncomment and adapt to test
             day = datetime.now().day
             # day = 22  # uncomment and adapt to test
@@ -74,10 +76,6 @@ def december_cycle(strip, month):
                 time.sleep(randint(13, 15) / 100.0)
             else:
                 candle(strip, strip.numPixels())
-
-            global stop_flag
-            if stop_flag:
-                break
 
     except KeyboardInterrupt:
         log.warn("KeyboardInterrupt")
@@ -97,25 +95,35 @@ def stop_advent():
 
 
 def run_advent():
+    strip = get_strip()
     month = datetime.now().month
     # month = 12  # uncomment to test
-    from light_effects.led_strip import get_strip
-    strip = get_strip()
     global stop_flag
     stop_flag = False
     log.info('advent started, stop_flag = ' + str(stop_flag))
-    while True:
+    for i in range(0, strip.numPixels(), 1):
+        strip.setPixelColor(i, Color(0, 0, 0))
+    try:
         if month != 12:
             log.warn('Wrong month for xmas/advent animation, it\'s {0}!'.format(time.strftime("%B")))
             while not stop_flag:
                 theater_chase(strip, Color(0, 15, 0))
-            clear(strip)
         else:
-            december_cycle(strip, month)
-        if stop_flag:
-            break
+            december_cycle(month, strip)
+
+    except KeyboardInterrupt:
+        log.warn("KeyboardInterrupt")
+        color_wipe_full(strip, Color(0, 0, 0), 0)
+        exit()
+
+    except Exception as e:
+        log.error("Any error occurs: " + str(e))
+        exit()
+
+    log.info('advent run stopped')
+    reset_strip(strip)
     return
 
 
 if __name__ == '__main__':
-    pass
+    run_advent()
