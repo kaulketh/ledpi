@@ -32,7 +32,7 @@ sR = 6
 sG = 30
 sB = 10
 
-log = logger.get_logger("Clock")
+log = logger.get_logger("Clock 1")
 stop_flag = None
 
 

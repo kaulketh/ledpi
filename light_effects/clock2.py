@@ -28,14 +28,14 @@ sR = 184
 sG = 134
 sB = 11
 
-log = logger.get_logger("Clock")
+log = logger.get_logger("Clock 2")
 stop_flag = None
 
 
 def stop_clock2():
     global stop_flag
     stop_flag = True
-    log.debug('clock stop_flag was set to ' + str(stop_flag))
+    log.debug('clock 2 stop_flag was set to ' + str(stop_flag))
     return stop_flag
 
 
@@ -45,7 +45,7 @@ def run_clock2():
 
     global stop_flag
     stop_flag = False
-    log.info('clock 1 started, stop_flag = ' + str(stop_flag))
+    log.info('clock 2 started, stop_flag = ' + str(stop_flag))
 
     for i in range(0, strip.numPixels(), 1):
         strip.setPixelColor(i, Color(0, 0, 0))
@@ -103,7 +103,7 @@ def run_clock2():
             log.error("Any error occurs: " + str(e))
             exit()
 
-    log.info('clock 1 run stopped')
+    log.info('clock 2 run stopped')
     color_wipe_full(strip, Color(0, 0, 0), 10)
     log.debug('LED stripe cleared')
     return
